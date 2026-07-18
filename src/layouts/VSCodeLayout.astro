@@ -311,12 +311,45 @@ const { title = "Rizky Pratama Yudha | Portfolio" } = Astro.props;
 
   [data-view-mode="split"] .code-panel {
     display: block !important;
-    width: 50% !important;
+    width: 35%;
+    flex-shrink: 0;
   }
   [data-view-mode="split"] .preview-panel {
     display: block !important;
-    width: 50% !important;
-    border-left: 1px solid var(--vscode-border);
+    width: 65%;
+    flex-shrink: 0;
+    border-left: none;
+  }
+
+  /* Resizer divider */
+  .panel-resizer {
+    display: none;
+    width: 5px;
+    flex-shrink: 0;
+    cursor: col-resize;
+    background: transparent;
+    position: relative;
+    z-index: 10;
+    transition: background 0.15s;
+  }
+  .panel-resizer::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 2px;
+    width: 1px;
+    background: var(--vscode-border);
+    transition: background 0.15s, width 0.15s, left 0.15s;
+  }
+  .panel-resizer:hover::after,
+  .panel-resizer.dragging::after {
+    background: #007acc;
+    width: 2px;
+    left: 1.5px;
+    box-shadow: 0 0 8px #007acc60;
+  }
+  [data-view-mode="split"] .panel-resizer {
+    display: block;
   }
 
   /* Responsive view modes for mobile */
@@ -326,13 +359,18 @@ const { title = "Rizky Pratama Yudha | Portfolio" } = Astro.props;
     }
     [data-view-mode="split"] .code-panel {
       width: 100% !important;
-      height: 50% !important;
+      height: 40% !important;
+      flex-shrink: 0;
     }
     [data-view-mode="split"] .preview-panel {
       width: 100% !important;
-      height: 50% !important;
+      height: 60% !important;
+      flex-shrink: 0;
       border-left: none !important;
       border-top: 1px solid var(--vscode-border) !important;
+    }
+    [data-view-mode="split"] .panel-resizer {
+      display: none;
     }
   }
 

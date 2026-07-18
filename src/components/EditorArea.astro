@@ -40,8 +40,11 @@ const { activeSection = 'index' } = Astro.props;
           </div>
         </div>
 
+        <!-- Panel Resizer -->
+        <div class="panel-resizer" aria-hidden="true"></div>
+
         <!-- Preview Panel -->
-        <div class="preview-panel overflow-y-auto p-6 md:p-12 flex-1 min-w-0">
+        <div class="preview-panel overflow-y-auto p-6 md:p-12 min-w-0">
           <div class="max-w-2xl mx-auto flex flex-col justify-center h-full min-h-[70vh]">
             <!-- Skeleton Loader -->
             <div id="preview-index-skeleton" class="space-y-6 animate-pulse">
@@ -130,7 +133,11 @@ const { activeSection = 'index' } = Astro.props;
         </div>
 
         <!-- Preview Panel -->
-        <div class="preview-panel overflow-y-auto p-6 md:p-10 flex-1 min-w-0">
+        <!-- Panel Resizer -->
+        <div class="panel-resizer" aria-hidden="true"></div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel overflow-y-auto p-6 md:p-10 min-w-0">
           <div class="max-w-2xl mx-auto space-y-8">
             <div>
               <h2 class="text-2xl font-bold mb-1 border-none pb-0 text-slate-200">About Me</h2>
@@ -240,11 +247,12 @@ const { activeSection = 'index' } = Astro.props;
           </pre>
         </div>
 
+        <!-- Panel Resizer -->
+        <div class="panel-resizer" aria-hidden="true"></div>
+
         <!-- Preview Panel -->
-        <div class="preview-panel overflow-y-auto p-6 md:p-10 flex-1 min-w-0">
-          <div class="max-w-2xl mx-auto space-y-8">
-            <div>
-              <h2 class="text-2xl font-bold mb-1 border-none pb-0 text-slate-200">Skills Dashboard</h2>
+        <div class="preview-panel overflow-y-auto p-6 md:p-10 min-w-0">
+
               <div class="w-12 h-1 bg-[#007acc] rounded"></div>
             </div>
 
@@ -300,8 +308,11 @@ const { activeSection = 'index' } = Astro.props;
           </pre>
         </div>
 
+        <!-- Panel Resizer -->
+        <div class="panel-resizer" aria-hidden="true"></div>
+
         <!-- Preview Panel -->
-        <div class="preview-panel overflow-y-auto p-6 md:p-10 flex-1 min-w-0">
+        <div class="preview-panel overflow-y-auto p-6 md:p-10 min-w-0">
           <div class="max-w-3xl mx-auto space-y-8">
             <div>
               <h2 class="text-2xl font-bold mb-1 border-none pb-0 text-slate-200">Projects Portfolio</h2>
@@ -353,8 +364,11 @@ const { activeSection = 'index' } = Astro.props;
           </pre>
         </div>
 
+        <!-- Panel Resizer -->
+        <div class="panel-resizer" aria-hidden="true"></div>
+
         <!-- Preview Panel -->
-        <div class="preview-panel overflow-y-auto p-6 md:p-10 flex-1 min-w-0">
+        <div class="preview-panel overflow-y-auto p-6 md:p-10 min-w-0">
           <div class="max-w-xl mx-auto space-y-8">
             <div>
               <h2 class="text-2xl font-bold mb-1 border-none pb-0 text-slate-200">Get In Touch</h2>
@@ -409,3 +423,68 @@ const { activeSection = 'index' } = Astro.props;
 
   </div>
 </main>
+
+<script>
+  // ── Panel Resizer Logic ────────────────────────────────────────────────────
+  function initResizers() {
+    const resizers = document.querySelectorAll<HTMLElement>('.panel-resizer');
+
+    resizers.forEach((resizer) => {
+      const container = resizer.closest<HTMLElement>('.panel-container');
+      if (!container) return;
+      const codePanel   = container.querySelector<HTMLElement>('.code-panel');
+      const previewPanel = container.querySelector<HTMLElement>('.preview-panel');
+      if (!codePanel || !previewPanel) return;
+
+      let dragging = false;
+      let startX   = 0;
+      let startCodeW = 0;
+
+      resizer.addEventListener('mousedown', (e: MouseEvent) => {
+        // Only active in split mode
+        const editor = document.getElementById('editor');
+        const viewMode = editor?.closest('[data-view-mode]')?.getAttribute('data-view-mode');
+        if (viewMode !== 'split') return;
+
+        dragging = true;
+        startX   = e.clientX;
+        startCodeW = codePanel.getBoundingClientRect().width;
+        resizer.classList.add('dragging');
+        document.body.style.cursor  = 'col-resize';
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', (e: MouseEvent) => {
+        if (!dragging) return;
+        const totalW = container.getBoundingClientRect().width;
+        const delta  = e.clientX - startX;
+        const newCodeW = Math.min(Math.max(startCodeW + delta, totalW * 0.15), totalW * 0.75);
+        const newCodePct    = (newCodeW / totalW) * 100;
+        const newPreviewPct = 100 - newCodePct;
+
+        codePanel.style.width    = `${newCodePct}%`;
+        previewPanel.style.width = `${newPreviewPct}%`;
+        sessionStorage.setItem('panelSplitRatio', String(newCodePct.toFixed(1)));
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (!dragging) return;
+        dragging = false;
+        resizer.classList.remove('dragging');
+        document.body.style.cursor    = '';
+        document.body.style.userSelect = '';
+      });
+    });
+
+    // Restore saved ratio
+    const saved = sessionStorage.getItem('panelSplitRatio');
+    if (saved) {
+      const pct = parseFloat(saved);
+      document.querySelectorAll<HTMLElement>('.code-panel').forEach(p => p.style.width = `${pct}%`);
+      document.querySelectorAll<HTMLElement>('.preview-panel').forEach(p => p.style.width = `${100 - pct}%`);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', initResizers);
+</script>
