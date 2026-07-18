@@ -1,0 +1,66 @@
+name: Update About
+description: Update your main profile and education biography
+title: "[About] "
+labels: ["about"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gunakan form ini untuk memperbarui biodata profil dan linimasa pendidikan Anda.
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      placeholder: Contoh: Backend Developer
+    validations:
+      required: true
+  - type: input
+    id: description
+    attributes:
+      label: Description
+      placeholder: Contoh: Simplifying Frontend & Backend Development...
+    validations:
+      required: true
+  - type: textarea
+    id: biography
+    attributes:
+      label: Biography
+      placeholder: Ceritakan tentang diri Anda secara mendalam...
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      placeholder: Contoh: Malang, East Java - Indonesia
+  - type: input
+    id: education
+    attributes:
+      label: Education
+      placeholder: Contoh: Politeknik Negeri Malang
+  - type: textarea
+    id: avatar
+    attributes:
+      label: Avatar
+      description: Tarik dan lepas (drag & drop) gambar foto profil Anda ke sini untuk mengunggahnya.
+      placeholder: Tarik gambar profil ke sini...
+  - type: textarea
+    id: cv
+    attributes:
+      label: CV
+      description: Tarik dan lepas (drag & drop) file PDF CV Anda ke sini untuk mengunggahnya.
+      placeholder: Tarik file PDF CV ke sini...
+  - type: textarea
+    id: education_timeline
+    attributes:
+      label: Education Timeline
+      description: Masukkan timeline riwayat pendidikan dalam format JSON array.
+      placeholder: |
+        [
+          {
+            "period": "2023 - Present",
+            "institution": "Politeknik Negeri Malang",
+            "major": "Teknologi Informasi",
+            "description": "Fokus belajar pemrograman..."
+          }
+        ]

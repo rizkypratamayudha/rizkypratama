@@ -147,6 +147,12 @@ import LoadingScreen from '../components/LoadingScreen.astro';
       return data;
     }
 
+    function extractUrl(text: string) {
+      if (!text) return '';
+      const match = text.match(/\((https?:\/\/[^\s)]+)\)/);
+      return match ? match[1] : text.trim();
+    }
+
     async function syncGitHubIssues() {
       logOutput('[GitHub Sync] Menghubungkan ke repositori GitHub rizkypratamayudha/rizkypratama...');
       try {
@@ -175,9 +181,9 @@ import LoadingScreen from '../components/LoadingScreen.astro';
               title: issue.title,
               description: metadata.description || '',
               tech: metadata.technologies ? metadata.technologies.split(',').map((t: string) => t.trim()) : [],
-              image: metadata.image || '#',
-              github: metadata.github_link || '#',
-              demo: metadata.live_demo || '#',
+              image: extractUrl(metadata.image || '') || '#',
+              github: extractUrl(metadata.github_link || '') || '#',
+              demo: extractUrl(metadata.live_demo || '') || '#',
               status: metadata.status || 'completed'
             });
           } else if (labels.includes('skill')) {
@@ -204,8 +210,8 @@ import LoadingScreen from '../components/LoadingScreen.astro';
               bio: metadata.biography || '',
               location: metadata.location || '',
               education: metadata.education || '',
-              avatar: metadata.avatar || '',
-              cv: metadata.cv || '',
+              avatar: extractUrl(metadata.avatar || ''),
+              cv: extractUrl(metadata.cv || ''),
               education_timeline: timeline.length > 0 ? timeline : null
             };
           }
