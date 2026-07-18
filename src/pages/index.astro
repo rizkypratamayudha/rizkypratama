@@ -376,7 +376,7 @@ ${list.map((skill, skillIndex) => `    <span class="bracket">&#123;</span> <span
           const projectsGrid = document.getElementById('preview-projects-grid');
           if (projectsGrid) {
             projectsGrid.innerHTML = projects.map(project => `
-              <div class="preview-card p-5 rounded-xl flex flex-col justify-between space-y-4">
+              <div class="preview-card gradient-border p-5 rounded-xl flex flex-col justify-between space-y-4">
                 <div class="h-32 rounded-lg overflow-hidden relative bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 flex items-center justify-center group">
                   <span class="text-3xl font-bold font-mono tracking-wider text-slate-700/60 select-none uppercase">
                     ${project.title.split(' ').map((w: string) => w[0]).join('').slice(0, 3)}
