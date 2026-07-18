@@ -149,14 +149,19 @@ import LoadingScreen from '../components/LoadingScreen.astro';
 
     function extractUrl(text: string) {
       if (!text) return '';
-      const match = text.match(/\((https?:\/\/[^\s)]+)\)/);
-      return match ? match[1] : text.trim();
+      // Cocokkan link markdown: ![alt](url)
+      let match = text.match(/\((https?:\/\/[^\s)]+)\)/);
+      if (match) return match[1];
+      // Cocokkan tag HTML img src: src="url"
+      match = text.match(/src="([^"]+)"/);
+      if (match) return match[1];
+      return text.trim();
     }
 
     async function syncGitHubIssues() {
       logOutput('[GitHub Sync] Menghubungkan ke repositori GitHub rizkypratamayudha/rizkypratama...');
       try {
-        const res = await fetch('https://api.github.com/repos/rizkypratamayudha/rizkypratama/issues?state=closed&per_page=100');
+        const res = await fetch('https://api.github.com/repos/rizkypratamayudha/rizkypratama/issues?state=closed&per_page=100', { cache: 'no-store' });
         if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
         
         const issues = await res.json();
