@@ -67,17 +67,17 @@ const { activeSection = 'index' } = Astro.props;
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                 Ready for Projects
               </div>
-              <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight" style="line-height: 1.1;">
+              <h1 class="preview-hero-title text-4xl font-extrabold tracking-tight" style="line-height: 1.1;">
                 Hi, I'm <span id="preview-index-name-gradient" class="bg-gradient-to-r from-blue-500 to-teal-400 bg-clip-text text-transparent">{aboutData.name}</span>
               </h1>
-              <p id="preview-index-title" class="text-xl md:text-2xl font-semibold text-slate-400 dark:text-slate-300">
+              <p id="preview-index-title" class="preview-hero-subtitle text-xl font-semibold text-slate-400 dark:text-slate-300">
                 {aboutData.title}
               </p>
               <p id="preview-index-desc" class="text-base md:text-lg text-slate-500 dark:text-slate-400 max-w-xl leading-relaxed">
                 {aboutData.description}
               </p>
               
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 max-w-md">
+              <div class="preview-info-grid grid grid-cols-2 gap-4 mt-8 max-w-md">
                 <div class="p-3 rounded-lg bg-black/10 dark:bg-white/5 border border-slate-700/50 flex items-center gap-3">
                   <div class="p-2 rounded bg-blue-500/10 text-blue-500">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
@@ -169,8 +169,8 @@ const { activeSection = 'index' } = Astro.props;
 
             <!-- Main Content (Hidden until loaded) -->
             <div id="preview-about-content" class="hidden space-y-8">
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="md:col-span-1 flex flex-col items-center text-center p-5 rounded-lg bg-black/10 dark:bg-white/5 border border-slate-700/30">
+              <div class="preview-about-grid grid grid-cols-1 md:grid-cols-3 gap-6">
+
                   <!-- Glowing Avatar Placeholder -->
                   <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-500 to-teal-400 p-[3px] shadow-lg shadow-blue-500/20 mb-4 overflow-hidden relative">
                     <div id="preview-about-avatar-fallback" class="w-full h-full rounded-full bg-slate-800 flex items-center justify-center text-2xl font-bold font-mono text-white">
@@ -256,7 +256,7 @@ const { activeSection = 'index' } = Astro.props;
               <div class="w-12 h-1 bg-[#007acc] rounded"></div>
             </div>
 
-            <div id="preview-skills-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="preview-skills-grid" class="preview-grid-responsive grid grid-cols-2 gap-6">
               <div class="preview-card p-6 rounded-xl space-y-4 animate-pulse">
                 <div class="h-4 bg-slate-800/60 rounded w-1/3"></div>
                 <div class="flex flex-wrap gap-2 pt-1">
@@ -319,7 +319,7 @@ const { activeSection = 'index' } = Astro.props;
               <div class="w-12 h-1 bg-[#007acc] rounded"></div>
             </div>
 
-            <div id="preview-projects-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="preview-projects-grid" class="preview-grid-responsive grid grid-cols-2 gap-6">
               <div class="preview-card gradient-border p-5 rounded-xl flex flex-col justify-between space-y-4 animate-pulse">
                 <div class="h-32 rounded-lg bg-slate-800/40"></div>
                 <div class="space-y-2">
@@ -425,6 +425,65 @@ const { activeSection = 'index' } = Astro.props;
 </main>
 
 <script>
+  // ── Responsive Preview Layout via ResizeObserver ──────────────────────────
+  //
+  // Tailwind breakpoints are viewport-based, so we need a ResizeObserver to
+  // swap grid / text classes whenever the preview panel itself resizes.
+  //
+  function applyContainerStyles(panel: HTMLElement) {
+    const w = panel.getBoundingClientRect().width;
+
+    // ─── Grid targets ─────────────────────────────────────────────────────
+    // Elements that should be 1-col when narrow, 2-col when wide
+    panel.querySelectorAll<HTMLElement>('.preview-grid-responsive').forEach(el => {
+      el.style.gridTemplateColumns = w < 500 ? '1fr' : '1fr 1fr';
+    });
+
+    // sm:grid-cols-2 for info cards (location/education)
+    panel.querySelectorAll<HTMLElement>('.preview-info-grid').forEach(el => {
+      el.style.gridTemplateColumns = w < 440 ? '1fr' : '1fr 1fr';
+    });
+
+    // ─── Typography ───────────────────────────────────────────────────────
+    // h1 hero title: smaller when panel is cramped
+    panel.querySelectorAll<HTMLElement>('.preview-hero-title').forEach(el => {
+      el.classList.remove('text-3xl','text-4xl','text-5xl');
+      if      (w < 380) el.classList.add('text-3xl');
+      else if (w < 520) el.classList.add('text-4xl');
+      else              el.classList.add('text-5xl');
+    });
+
+    // sub-title
+    panel.querySelectorAll<HTMLElement>('.preview-hero-subtitle').forEach(el => {
+      el.classList.remove('text-lg','text-xl','text-2xl');
+      if (w < 420) el.classList.add('text-lg');
+      else if (w < 560) el.classList.add('text-xl');
+      else el.classList.add('text-2xl');
+    });
+
+    // ─── About: 3-col grid → 1-col when narrow ───────────────────────────
+    panel.querySelectorAll<HTMLElement>('.preview-about-grid').forEach(el => {
+      el.style.gridTemplateColumns = w < 540 ? '1fr' : '1fr 2fr';
+    });
+
+    // ─── Padding ─────────────────────────────────────────────────────────
+    const narrow = w < 480;
+    panel.style.padding = narrow ? '1rem' : '';
+  }
+
+  function initPreviewObservers() {
+    const panels = document.querySelectorAll<HTMLElement>('.preview-panel');
+    const ro = new ResizeObserver(entries => {
+      entries.forEach(entry => {
+        applyContainerStyles(entry.target as HTMLElement);
+      });
+    });
+    panels.forEach(panel => {
+      ro.observe(panel);
+      applyContainerStyles(panel); // run once immediately
+    });
+  }
+
   // ── Panel Resizer Logic ────────────────────────────────────────────────────
   function initResizers() {
     const resizers = document.querySelectorAll<HTMLElement>('.panel-resizer');
@@ -432,47 +491,46 @@ const { activeSection = 'index' } = Astro.props;
     resizers.forEach((resizer) => {
       const container = resizer.closest<HTMLElement>('.panel-container');
       if (!container) return;
-      const codePanel   = container.querySelector<HTMLElement>('.code-panel');
+      const codePanel    = container.querySelector<HTMLElement>('.code-panel');
       const previewPanel = container.querySelector<HTMLElement>('.preview-panel');
       if (!codePanel || !previewPanel) return;
 
-      let dragging = false;
-      let startX   = 0;
+      let dragging  = false;
+      let startX    = 0;
       let startCodeW = 0;
 
       resizer.addEventListener('mousedown', (e: MouseEvent) => {
-        // Only active in split mode
         const editor = document.getElementById('editor');
         const viewMode = editor?.closest('[data-view-mode]')?.getAttribute('data-view-mode');
         if (viewMode !== 'split') return;
 
-        dragging = true;
-        startX   = e.clientX;
+        dragging   = true;
+        startX     = e.clientX;
         startCodeW = codePanel.getBoundingClientRect().width;
         resizer.classList.add('dragging');
-        document.body.style.cursor  = 'col-resize';
+        document.body.style.cursor     = 'col-resize';
         document.body.style.userSelect = 'none';
         e.preventDefault();
       });
 
       document.addEventListener('mousemove', (e: MouseEvent) => {
         if (!dragging) return;
-        const totalW = container.getBoundingClientRect().width;
-        const delta  = e.clientX - startX;
-        const newCodeW = Math.min(Math.max(startCodeW + delta, totalW * 0.15), totalW * 0.75);
-        const newCodePct    = (newCodeW / totalW) * 100;
-        const newPreviewPct = 100 - newCodePct;
+        const totalW    = container.getBoundingClientRect().width;
+        const delta     = e.clientX - startX;
+        const newCodeW  = Math.min(Math.max(startCodeW + delta, totalW * 0.15), totalW * 0.75);
+        const codePct   = (newCodeW / totalW) * 100;
+        const prevPct   = 100 - codePct;
 
-        codePanel.style.width    = `${newCodePct}%`;
-        previewPanel.style.width = `${newPreviewPct}%`;
-        sessionStorage.setItem('panelSplitRatio', String(newCodePct.toFixed(1)));
+        codePanel.style.width    = `${codePct}%`;
+        previewPanel.style.width = `${prevPct}%`;
+        sessionStorage.setItem('panelSplitRatio', String(codePct.toFixed(1)));
       });
 
       document.addEventListener('mouseup', () => {
         if (!dragging) return;
         dragging = false;
         resizer.classList.remove('dragging');
-        document.body.style.cursor    = '';
+        document.body.style.cursor     = '';
         document.body.style.userSelect = '';
       });
     });
@@ -481,10 +539,14 @@ const { activeSection = 'index' } = Astro.props;
     const saved = sessionStorage.getItem('panelSplitRatio');
     if (saved) {
       const pct = parseFloat(saved);
-      document.querySelectorAll<HTMLElement>('.code-panel').forEach(p => p.style.width = `${pct}%`);
+      document.querySelectorAll<HTMLElement>('.code-panel').forEach(p   => p.style.width = `${pct}%`);
       document.querySelectorAll<HTMLElement>('.preview-panel').forEach(p => p.style.width = `${100 - pct}%`);
     }
   }
 
-  document.addEventListener('DOMContentLoaded', initResizers);
+  document.addEventListener('DOMContentLoaded', () => {
+    initResizers();
+    initPreviewObservers();
+  });
 </script>
+
