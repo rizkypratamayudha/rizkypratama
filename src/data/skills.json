@@ -1,23 +1,6 @@
 {
-  "backend": [
-    { "name": "Laravel", "icon": "laravel", "color": "#FF2D20", "level": 90 },
-    { "name": "PHP", "icon": "php", "color": "#777BB4", "level": 85 },
-    { "name": "MySQL", "icon": "mysql", "color": "#4479A1", "level": 80 },
-    { "name": "JavaScript", "icon": "javascript", "color": "#F7DF1E", "level": 75 }
-  ],
-  "frontend": [
-    { "name": "HTML5", "icon": "html5", "color": "#E34F26", "level": 95 },
-    { "name": "CSS3", "icon": "css3", "color": "#1572B6", "level": 90 },
-    { "name": "Tailwind CSS", "icon": "tailwind", "color": "#06B6D4", "level": 85 },
-    { "name": "Bootstrap", "icon": "bootstrap", "color": "#7952B3", "level": 80 }
-  ],
-  "mobile": [
-    { "name": "Flutter", "icon": "flutter", "color": "#02569B", "level": 75 },
-    { "name": "Dart", "icon": "dart", "color": "#0175C2", "level": 70 }
-  ],
-  "tools": [
-    { "name": "Figma", "icon": "figma", "color": "#F24E1E", "level": 80 },
-    { "name": "GitHub", "icon": "github", "color": "#181717", "level": 85 },
-    { "name": "Notion", "icon": "notion", "color": "#000000", "level": 80 }
-  ]
+  "backend": [],
+  "frontend": [],
+  "mobile": [],
+  "tools": []
 }
