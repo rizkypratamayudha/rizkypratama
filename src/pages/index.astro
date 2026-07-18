@@ -174,12 +174,17 @@ import LoadingScreen from '../components/LoadingScreen.astro';
         issues.forEach((issue: any) => {
           if (issue.pull_request) return;
           const labels = issue.labels.map((l: any) => l.name.toLowerCase());
+          const titleLower = (issue.title || '').toLowerCase();
           
-          if (labels.includes('project')) {
+          const isProject = labels.includes('project') || titleLower.includes('[project]') || titleLower.startsWith('project:');
+          const isSkill = labels.includes('skill') || titleLower.includes('[skill]') || titleLower.startsWith('skill:');
+          const isAbout = labels.includes('about') || titleLower.includes('[about]') || titleLower.startsWith('about:');
+          
+          if (isProject) {
             const metadata = parseMarkdownBody(issue.body || '');
             projects.push({
               id: issue.number,
-              title: issue.title,
+              title: issue.title.replace(/\[project\]/i, '').trim(),
               description: metadata.description || '',
               tech: metadata.technologies ? metadata.technologies.split(',').map((t: string) => t.trim()) : [],
               image: extractUrl(metadata.image || '') || '#',
@@ -187,16 +192,16 @@ import LoadingScreen from '../components/LoadingScreen.astro';
               demo: extractUrl(metadata.live_demo || '') || '#',
               status: metadata.status || 'completed'
             });
-          } else if (labels.includes('skill')) {
+          } else if (isSkill) {
             const metadata = parseMarkdownBody(issue.body || '');
             const category = (metadata.category || 'backend').toLowerCase();
             if (skills[category]) {
               skills[category].push({
-                name: issue.title,
+                name: issue.title.replace(/\[skill\]/i, '').trim(),
                 color: metadata.color || '#007acc'
               });
             }
-          } else if (labels.includes('about')) {
+          } else if (isAbout) {
             const metadata = parseMarkdownBody(issue.body || '');
             let timeline = [];
             if (metadata.education_timeline) {
