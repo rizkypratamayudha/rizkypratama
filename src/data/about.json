@@ -1,0 +1,20 @@
+{
+  "name": "Rizky Pratama Yudha",
+  "title": "Backend Developer",
+  "description": "Simplifying Frontend & Backend Development for Your Projects",
+  "bio": "Hello! I am a student at Politeknik Negeri Malang focused on Backend Development with experience in building scalable, secure, and high-performance server-side applications. I am proficient in technologies such as Laravel, MySQL, Javascript, PHP Native, and APIs used in Flutter Mobile applications.\n\nMy passion is optimizing application performance with efficient solutions. I also have experience with frontend technologies like HTML 5, CSS, Bootstrap 5, Tailwind CSS, and AdminLTE templating.\n\nI believe that teamwork and collaboration are key to creating the best solutions for clients and end users.",
+  "location": "Malang, East Java - Indonesia",
+  "education": "Politeknik Negeri Malang - Jurusan Teknologi Informasi",
+  "github": "https://github.com/rizkypratamayudha",
+  "email": "rizkypratamayudha@gmail.com",
+  "cv": "/assets/CV Rizky Pratama Yudha.pdf",
+  "avatar": "/assets/avatar.png",
+  "education_timeline": [
+    {
+      "period": "2023 - Present",
+      "institution": "Politeknik Negeri Malang",
+      "major": "Jurusan Teknologi Informasi",
+      "description": "Fokus pada pengembangan rekayasa perangkat lunak, optimasi database relasional, analisis algoritma, dan pemrograman sistem backend terdistribusi."
+    }
+  ]
+}

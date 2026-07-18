@@ -1,0 +1,179 @@
+---
+// Search Overlay Component
+import skillsData from '../data/skills.json';
+import projectsData from '../data/projects.json';
+---
+
+<div 
+  id="search-overlay" 
+  class="hidden fixed inset-0 z-50 flex items-start justify-center pt-[15vh]" 
+  style="background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);"
+  data-skills={JSON.stringify(skillsData)}
+  data-projects={JSON.stringify(projectsData)}
+>
+  <div class="w-full max-w-lg mx-4 overflow-hidden rounded-lg shadow-2xl" style="background: var(--vscode-sidebar); border: 1px solid var(--vscode-border);">
+    <!-- Search Input -->
+    <div class="flex items-center gap-3 px-4" style="border-bottom: 1px solid var(--vscode-border);">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--vscode-text-muted);">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input 
+        id="search-input" 
+        type="text" 
+        placeholder="Search files, skills, projects..." 
+        class="flex-1 py-3 bg-transparent border-none outline-none text-sm font-mono"
+        style="color: var(--vscode-text);"
+        autocomplete="off"
+      />
+      <kbd class="text-[10px] px-1.5 py-0.5 rounded" style="background: var(--vscode-hover); color: var(--vscode-text-muted); border: 1px solid var(--vscode-border);">ESC</kbd>
+    </div>
+
+    <!-- Search Results -->
+    <div id="search-results" class="max-h-[50vh] overflow-y-auto p-2">
+      <div class="p-4 text-center text-sm" style="color: var(--vscode-text-muted);">
+        Type to search...
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('search-overlay');
+    const input = document.getElementById('search-input') as HTMLInputElement;
+    const resultsContainer = document.getElementById('search-results');
+
+    // Retrieve serialized JSON from attributes
+    const skillsRaw = overlay?.getAttribute('data-skills') || '{}';
+    const projectsRaw = overlay?.getAttribute('data-projects') || '[]';
+    
+    const skillsObj = JSON.parse(skillsRaw);
+    const projectsObj = JSON.parse(projectsRaw);
+
+    const baseFiles = [
+      { section: 'index', name: 'index.html', type: 'file', description: 'Home - Profile Overview' },
+      { section: 'about', name: 'about.md', type: 'file', description: 'About Me - Background & Education' },
+      { section: 'skills', name: 'skills.json', type: 'file', description: 'Skills & Technologies' },
+      { section: 'projects', name: 'projects.json', type: 'file', description: 'Projects Portfolio' },
+      { section: 'contact', name: 'contact.json', type: 'file', description: 'Contact Information' },
+    ];
+
+    // Dynamic skills mapper
+    const dynamicSkills = Object.entries(skillsObj).flatMap(([category, list]) => 
+      (list as any[]).map(skill => ({
+        section: 'skills',
+        name: skill.name,
+        type: 'skill',
+        description: `${category.charAt(0).toUpperCase() + category.slice(1)} Skill`
+      }))
+    );
+
+    // Dynamic projects mapper
+    const dynamicProjects = (projectsObj as any[]).map(project => ({
+      section: 'projects',
+      name: project.title,
+      type: 'project',
+      description: project.description
+    }));
+
+    const searchData = [...baseFiles, ...dynamicSkills, ...dynamicProjects];
+
+    function openSearch() {
+      overlay?.classList.remove('hidden');
+      setTimeout(() => input?.focus(), 100);
+    }
+
+    function closeSearch() {
+      overlay?.classList.add('hidden');
+      if (input) input.value = '';
+      renderResults('');
+    }
+
+    function renderResults(query: string) {
+      if (!resultsContainer) return;
+
+      if (!query.trim()) {
+        resultsContainer.innerHTML = `
+          <div class="p-4 text-center text-sm" style="color: var(--vscode-text-muted);">
+            Type to search...
+          </div>
+        `;
+        return;
+      }
+
+      const filtered = searchData.filter(item => 
+        item.name.toLowerCase().includes(query.toLowerCase()) ||
+        item.description.toLowerCase().includes(query.toLowerCase())
+      );
+
+      if (filtered.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="p-4 text-center text-sm" style="color: var(--vscode-text-muted);">
+            No results found for "${query}"
+          </div>
+        `;
+        return;
+      }
+
+      const iconMap: Record<string, string> = {
+        file: '📄',
+        skill: '⚡',
+        project: '📦',
+      };
+
+      resultsContainer.innerHTML = filtered.map(item => `
+        <button 
+          class="w-full flex items-center gap-3 px-3 py-2 rounded text-left transition-colors hover:bg-[var(--vscode-hover)]"
+          data-section="${item.section}"
+        >
+          <span>${iconMap[item.type]}</span>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-mono truncate" style="color: var(--vscode-text);">${item.name}</div>
+            <div class="text-xs truncate" style="color: var(--vscode-text-muted);">${item.description}</div>
+          </div>
+          <span class="text-[10px] px-1.5 py-0.5 rounded" style="background: var(--vscode-hover); color: var(--vscode-text-muted);">${item.type}</span>
+        </button>
+      `).join('');
+
+      // Add click handlers to results
+      resultsContainer.querySelectorAll('button[data-section]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const section = (btn as HTMLElement).dataset.section;
+          if (section) {
+            // Trigger section change
+            const sidebarBtn = document.querySelector(`.file-item[data-section="${section}"]`);
+            if (sidebarBtn) {
+              (sidebarBtn as HTMLButtonElement).click();
+            }
+            closeSearch();
+          }
+        });
+      });
+    }
+
+    // Event listeners
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        openSearch();
+      }
+      if (e.key === 'Escape') {
+        closeSearch();
+      }
+    });
+
+    overlay?.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        closeSearch();
+      }
+    });
+
+    input?.addEventListener('input', () => {
+      renderResults(input.value);
+    });
+
+    // Expose openSearch for search button
+    (window as any).openSearch = openSearch;
+  });
+</script>

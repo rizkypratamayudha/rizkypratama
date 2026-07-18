@@ -1,0 +1,228 @@
+---
+import VSCodeLayout from '../layouts/VSCodeLayout.astro';
+import ActivityBar from '../components/ActivityBar.astro';
+import Sidebar from '../components/Sidebar.astro';
+import TabBar from '../components/TabBar.astro';
+import EditorArea from '../components/EditorArea.astro';
+import StatusBar from '../components/StatusBar.astro';
+import BottomPanel from '../components/BottomPanel.astro';
+import SearchOverlay from '../components/SearchOverlay.astro';
+import LoadingScreen from '../components/LoadingScreen.astro';
+---
+
+<VSCodeLayout title="Rizky Pratama Yudha | Portfolio">
+  <!-- Loading Screen -->
+  <LoadingScreen />
+
+  <!-- Search Overlay -->
+  <SearchOverlay />
+
+  <div id="vscode-window" class="fixed inset-0 flex flex-col isolate" style="background: var(--vscode-window);" data-view-mode="split">
+    <!-- Workspace Bar -->
+    <div class="flex items-center px-3 flex-shrink-0 relative justify-between sm:justify-start" style="height: 28px; background: var(--vscode-sidebar); border-bottom: 1px solid var(--vscode-border);">
+      <!-- Mode Switcher -->
+      <div class="flex items-center gap-1 z-10">
+        <span class="text-[10px] font-mono mr-1 hidden sm:inline" style="color: var(--vscode-text-muted);">View:</span>
+        <div class="flex items-center bg-black/20 rounded p-0.5" style="border: 1px solid var(--vscode-border);">
+          <button id="mode-btn-code" class="px-2 h-[18px] text-[10px] font-mono rounded transition-colors flex items-center gap-1" style="color: var(--vscode-text-muted);" title="Developer Mode (Code Only)">
+            <span>💻 Code</span>
+          </button>
+          <button id="mode-btn-split" class="px-2 h-[18px] text-[10px] font-mono rounded transition-colors flex items-center gap-1" style="color: var(--vscode-text-muted);" title="Split Mode (Code & Preview)">
+            <span>↔️ Split</span>
+          </button>
+          <button id="mode-btn-preview" class="px-2 h-[18px] text-[10px] font-mono rounded transition-colors flex items-center gap-1" style="color: var(--vscode-text-muted);" title="Recruiter Mode (Visual Only)">
+            <span>🎨 Preview</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none hidden md:flex">
+        <div class="flex items-center gap-1.5 px-2 h-[18px] text-[11px] font-mono" style="color: var(--vscode-text); background: var(--vscode-hover); border: 1px solid var(--vscode-border); border-radius: 2px;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="color: #F5A100; flex-shrink: 0;">
+            <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"></path>
+          </svg>
+          <span>Portfolio</span>
+        </div>
+      </div>
+
+      <a href="https://github.com/rizkypratamayudha" target="_blank" rel="noopener" class="flex items-center gap-1 text-[11px] font-mono hover:opacity-80 transition-colors ml-auto z-10" style="color: var(--vscode-text-muted);">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path>
+        </svg>
+        <span class="hidden sm:inline">rizkypratamayudha</span>
+      </a>
+    </div>
+
+    <div class="flex flex-1 overflow-hidden min-h-0">
+      <ActivityBar />
+      <Sidebar activeSection="index" />
+      
+      <div class="relative z-0 flex flex-col flex-1 overflow-hidden min-w-0">
+        <TabBar activeTab="index" />
+        <EditorArea activeSection="index" />
+        <BottomPanel />
+      </div>
+    </div>
+
+    <StatusBar />
+  </div>
+</VSCodeLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // View Mode Logic
+    const vscodeWindow = document.getElementById('vscode-window');
+    const modeBtnCode = document.getElementById('mode-btn-code');
+    const modeBtnSplit = document.getElementById('mode-btn-split');
+    const modeBtnPreview = document.getElementById('mode-btn-preview');
+
+    function updateViewMode(mode: 'code' | 'split' | 'preview') {
+      if (!vscodeWindow) return;
+      
+      localStorage.setItem('portfolio-view-mode', mode);
+      vscodeWindow.setAttribute('data-view-mode', mode);
+
+      [modeBtnCode, modeBtnSplit, modeBtnPreview].forEach(btn => {
+        if (btn) {
+          btn.style.background = 'transparent';
+          btn.style.color = 'var(--vscode-text-muted)';
+        }
+      });
+
+      let activeBtn = modeBtnCode;
+      if (mode === 'split') activeBtn = modeBtnSplit;
+      else if (mode === 'preview') activeBtn = modeBtnPreview;
+
+      if (activeBtn) {
+        activeBtn.style.background = 'var(--vscode-accent)';
+        activeBtn.style.color = '#ffffff';
+      }
+    }
+
+    const savedMode = (localStorage.getItem('portfolio-view-mode') || 'split') as 'code' | 'split' | 'preview';
+    updateViewMode(savedMode);
+
+    modeBtnCode?.addEventListener('click', () => updateViewMode('code'));
+    modeBtnSplit?.addEventListener('click', () => updateViewMode('split'));
+    modeBtnPreview?.addEventListener('click', () => updateViewMode('preview'));
+
+    (window as any).updateViewMode = updateViewMode;
+
+    // Navigation logic
+    const sidebarButtons = document.querySelectorAll('.file-item[data-section]');
+    const tabButtons = document.querySelectorAll('.tab-item[data-tab]');
+    const sections = document.querySelectorAll('[id^="section-"]');
+    const breadcrumb = document.getElementById('breadcrumb-file');
+
+    const fileMap: Record<string, string> = {
+      index: 'index.html',
+      about: 'about.md',
+      skills: 'skills.json',
+      projects: 'projects.json',
+      contact: 'contact.json',
+    };
+
+    function setActiveSection(sectionId: string) {
+      // Update sidebar
+      sidebarButtons.forEach((btn) => {
+        const btnSection = (btn as HTMLElement).dataset.section;
+        if (btnSection === sectionId) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Update tabs
+      tabButtons.forEach((tab) => {
+        const tabSection = (tab as HTMLElement).dataset.tab;
+        if (tabSection === sectionId) {
+          tab.classList.add('active');
+          (tab as HTMLElement).style.borderTopColor = '#007acc';
+        } else {
+          tab.classList.remove('active');
+          (tab as HTMLElement).style.borderTopColor = 'transparent';
+        }
+      });
+
+      // Update sections with animation
+      sections.forEach((section) => {
+        const sectionElement = section as HTMLElement;
+        if (sectionElement.id === `section-${sectionId}`) {
+          sectionElement.classList.remove('hidden');
+          sectionElement.style.animation = 'fadeIn 0.2s ease-out';
+        } else {
+          sectionElement.classList.add('hidden');
+        }
+      });
+
+      // Update breadcrumb
+      if (breadcrumb) {
+        breadcrumb.textContent = fileMap[sectionId] || 'index.html';
+      }
+    }
+
+    // Sidebar click handlers
+    sidebarButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const sectionId = (btn as HTMLElement).dataset.section;
+        if (sectionId) {
+          setActiveSection(sectionId);
+        }
+      });
+    });
+
+    // Tab click handlers
+    tabButtons.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const sectionId = (tab as HTMLElement).dataset.tab;
+        if (sectionId) {
+          setActiveSection(sectionId);
+        }
+      });
+    });
+
+    // Activity bar buttons
+    const explorerBtn = document.getElementById('btn-explorer');
+    const sidebar = document.querySelector('.sidebar');
+
+    explorerBtn?.addEventListener('click', () => {
+      if (sidebar) {
+        const sidebarElement = sidebar as HTMLElement;
+        if (sidebarElement.classList.contains('w-0')) {
+          sidebarElement.classList.remove('w-0');
+          sidebarElement.classList.add('lg:w-64');
+        } else {
+          sidebarElement.classList.add('w-0');
+          sidebarElement.classList.remove('lg:w-64');
+        }
+      }
+    });
+
+    // Mobile: close sidebar when clicking on a section
+    if (window.innerWidth < 1024) {
+      sidebarButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (sidebar) {
+            const sidebarElement = sidebar as HTMLElement;
+            sidebarElement.classList.add('w-0');
+            sidebarElement.classList.remove('lg:w-64');
+          }
+        });
+      });
+    }
+  });
+</script>
+
+<style is:global>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

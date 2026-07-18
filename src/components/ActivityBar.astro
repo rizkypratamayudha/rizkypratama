@@ -1,0 +1,92 @@
+---
+// Activity Bar Component
+---
+
+<aside class="relative z-30 flex flex-col items-center py-2 flex-shrink-0 activity-bar" style="width: 48px; background: var(--vscode-activitybar);">
+  <nav class="flex flex-col items-center flex-1 w-full">
+    <button class="activity-btn activity-active" title="Explorer" id="btn-explorer">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"></path>
+        <polyline points="13 2 13 9 20 9"></polyline>
+      </svg>
+    </button>
+    <button class="activity-btn" title="Search (Ctrl+K)" id="btn-search">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </button>
+    <button class="activity-btn" title="Source Control" id="btn-git">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="6" y1="3" x2="6" y2="15"></line>
+        <circle cx="18" cy="6" r="3"></circle>
+        <circle cx="6" cy="18" r="3"></circle>
+        <path d="M18 9a9 9 0 01-9 9"></path>
+      </svg>
+    </button>
+  </nav>
+  <div class="mt-auto mb-2 w-full flex flex-col items-center gap-1">
+    <button class="activity-btn" title="Toggle Theme" id="btn-theme">
+      <svg id="theme-icon-dark" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+      <svg id="theme-icon-light" class="hidden" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+    </button>
+    <button class="activity-btn" title="Settings" id="btn-settings">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
+      </svg>
+    </button>
+  </div>
+</aside>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const themeBtn = document.getElementById('btn-theme');
+    const darkIcon = document.getElementById('theme-icon-dark');
+    const lightIcon = document.getElementById('theme-icon-light');
+    const html = document.documentElement;
+
+    function updateThemeIcon() {
+      if (html.classList.contains('light')) {
+        darkIcon?.classList.add('hidden');
+        lightIcon?.classList.remove('hidden');
+      } else {
+        darkIcon?.classList.remove('hidden');
+        lightIcon?.classList.add('hidden');
+      }
+    }
+
+    updateThemeIcon();
+
+    themeBtn?.addEventListener('click', () => {
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        html.classList.add('light');
+        localStorage.setItem('portfolio-theme', 'light');
+      } else {
+        html.classList.remove('light');
+        html.classList.add('dark');
+        localStorage.setItem('portfolio-theme', 'dark');
+      }
+      updateThemeIcon();
+    });
+
+    // Search button
+    const searchBtn = document.getElementById('btn-search');
+    searchBtn?.addEventListener('click', () => {
+      (window as any).openSearch?.();
+    });
+  });
+</script>

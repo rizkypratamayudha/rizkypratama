@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "Web Customer Satisfaction Survey Polinema",
+    "description": "A website project for Polinema Customer Satisfaction Information System built using HTML, PHP, and Javascript with MySQL database.",
+    "tech": ["HTML", "PHP", "JavaScript", "MySQL"],
+    "image": "/assets/projects/project1.png",
+    "github": "https://github.com/rizkypratamayudha",
+    "demo": "#",
+    "status": "completed"
+  },
+  {
+    "id": 2,
+    "title": "Information Technology Department Compensation System Web",
+    "description": "A website project for the Information Technology Department Compensation Information System built using Laravel framework and MySQL database.",
+    "tech": ["Laravel", "MySQL", "JavaScript"],
+    "image": "/assets/projects/project2.png",
+    "github": "https://github.com/rizkypratamayudha",
+    "demo": "#",
+    "status": "in-progress"
+  },
+  {
+    "id": 3,
+    "title": "E-Compensation Mobile Application",
+    "description": "An E-Compensation Mobile Application using Flutter framework and Dart, utilizing the same API from the Department Compensation System website.",
+    "tech": ["Flutter", "Dart", "REST API"],
+    "image": "/assets/projects/project3.png",
+    "github": "https://github.com/rizkypratamayudha",
+    "demo": "#",
+    "status": "in-progress"
+  },
+  {
+    "id": 4,
+    "title": "Redesign UI/UX PT.Krakatau Steel Website",
+    "description": "Redesigning and updating interface design, visual elements, layout, and interaction for PT Krakatau Steel's existing website.",
+    "tech": ["Figma", "UI/UX Design"],
+    "image": "/assets/projects/project4.png",
+    "github": "#",
+    "demo": "#",
+    "status": "completed"
+  },
+  {
+    "id": 5,
+    "title": "FIFARR Damaged Road Application UI/UX",
+    "description": "Creating UI/UX for a Mobile Application about road damage complaints with an innovative reward feature for users and complaint status tracking.",
+    "tech": ["Figma", "UI/UX Design"],
+    "image": "/assets/projects/project5.png",
+    "github": "#",
+    "demo": "#",
+    "status": "completed"
+  },
+  {
+    "id": 6,
+    "title": "Portfolio Website (VS Code Style)",
+    "description": "Personal portfolio website with VS Code-inspired UI, built using Astro and Tailwind CSS.",
+    "tech": ["Astro", "Tailwind CSS", "JavaScript"],
+    "image": "/assets/projects/project6.png",
+    "github": "https://github.com/rizkypratamayudha",
+    "demo": "#",
+    "status": "completed"
+  }
+]

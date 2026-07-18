@@ -1,0 +1,372 @@
+---
+interface Props {
+  title?: string;
+}
+
+const { title = "Rizky Pratama Yudha | Portfolio" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Rizky Pratama Yudha - Backend Developer Portfolio" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <title>{title}</title>
+    <script is:inline>
+      (function() {
+        try {
+          var theme = localStorage.getItem('portfolio-theme');
+          if (theme === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+          } else if (!theme && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+          }
+        } catch(e) {}
+      })();
+    </script>
+  </head>
+  <body class="bg-[#1e1e1e] dark:bg-[#1e1e1e] light:bg-[#ffffff] text-white dark:text-white light:text-[#333333] font-mono m-0 p-0 overflow-hidden transition-colors duration-200">
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --vscode-window: #1e1e1e;
+    --vscode-sidebar: #252526;
+    --vscode-activitybar: #333333;
+    --vscode-tabbar: #252526;
+    --vscode-editor: #1e1e1e;
+    --vscode-panel: #1e1e1e;
+    --vscode-statusbar: #007acc;
+    --vscode-text: #d4d4d4;
+    --vscode-text-muted: #858585;
+    --vscode-accent: #007acc;
+    --vscode-border: rgba(255, 255, 255, 0.08);
+    --vscode-hover: rgba(255, 255, 255, 0.04);
+  }
+
+  .light {
+    --vscode-window: #ffffff;
+    --vscode-sidebar: #f3f3f3;
+    --vscode-activitybar: #2c2c2c;
+    --vscode-tabbar: #ececec;
+    --vscode-editor: #ffffff;
+    --vscode-panel: #f3f3f3;
+    --vscode-statusbar: #007acc;
+    --vscode-text: #333333;
+    --vscode-text-muted: #616161;
+    --vscode-accent: #007acc;
+    --vscode-border: rgba(0, 0, 0, 0.1);
+    --vscode-hover: rgba(0, 0, 0, 0.04);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--vscode-editor);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #424242;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  .activity-btn {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #858585;
+    transition: color 0.15s;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+  }
+
+  .activity-btn:hover {
+    color: #ffffff;
+  }
+
+  .light .activity-btn:hover {
+    color: #333333;
+  }
+
+  .activity-active {
+    color: #ffffff !important;
+    border-left: 2px solid #ffffff;
+  }
+
+  .light .activity-active {
+    color: #333333 !important;
+    border-left: 2px solid #333333;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.1s;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .light .file-item {
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  .file-item:hover {
+    background: var(--vscode-hover);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .light .file-item:hover {
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  .file-item.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  .light .file-item.active {
+    background: rgba(0, 0, 0, 0.1);
+    color: #333333;
+  }
+
+  .folder-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .light .folder-item {
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+  .tab-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    font-size: 13px;
+    cursor: pointer;
+    border-top: 2px solid transparent;
+    transition: all 0.15s;
+    height: 100%;
+    white-space: nowrap;
+  }
+
+  .tab-item.active {
+    background: var(--vscode-editor);
+    color: #ffffff;
+    border-top-color: #007acc;
+  }
+
+  .light .tab-item.active {
+    color: #333333;
+  }
+
+  .tab-item:not(.active) {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.4);
+    border-top-color: transparent;
+  }
+
+  .light .tab-item:not(.active) {
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+  .tab-item:not(.active):hover {
+    background: var(--vscode-hover);
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .light .tab-item:not(.active):hover {
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .editor-content {
+    padding: 24px;
+    line-height: 1.7;
+  }
+
+  .editor-content h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--vscode-text);
+  }
+
+  .editor-content h2 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    color: #569cd6;
+  }
+
+  .editor-content p {
+    color: var(--vscode-text);
+    margin-bottom: 12px;
+  }
+
+  .editor-content .comment {
+    color: #6a9955;
+  }
+
+  .editor-content .key {
+    color: #9cdcfe;
+  }
+
+  .light .editor-content .key {
+    color: #0451a5;
+  }
+
+  .editor-content .string {
+    color: #ce9178;
+  }
+
+  .light .editor-content .string {
+    color: #a31515;
+  }
+
+  .editor-content .bracket {
+    color: #ffd700;
+  }
+
+  .light .editor-content .bracket {
+    color: #795e26;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .editor-content {
+      padding: 16px;
+    }
+
+    .editor-content h1 {
+      font-size: 1.5rem;
+    }
+
+    .editor-content h2 {
+      font-size: 1.1rem;
+    }
+  }
+
+  /* View Modes CSS */
+  .panel-container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    min-height: 0;
+  }
+
+  [data-view-mode="code"] .code-panel {
+    display: block !important;
+    width: 100% !important;
+  }
+  [data-view-mode="code"] .preview-panel {
+    display: none !important;
+  }
+
+  [data-view-mode="preview"] .code-panel {
+    display: none !important;
+  }
+  [data-view-mode="preview"] .preview-panel {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  [data-view-mode="split"] .code-panel {
+    display: block !important;
+    width: 50% !important;
+  }
+  [data-view-mode="split"] .preview-panel {
+    display: block !important;
+    width: 50% !important;
+    border-left: 1px solid var(--vscode-border);
+  }
+
+  /* Responsive view modes for mobile */
+  @media (max-width: 1024px) {
+    [data-view-mode="split"] .panel-container {
+      flex-direction: column !important;
+    }
+    [data-view-mode="split"] .code-panel {
+      width: 100% !important;
+      height: 50% !important;
+    }
+    [data-view-mode="split"] .preview-panel {
+      width: 100% !important;
+      height: 50% !important;
+      border-left: none !important;
+      border-top: 1px solid var(--vscode-border) !important;
+    }
+  }
+
+  /* Visual Preview Aesthetics */
+  .preview-panel {
+    background: #1a1a1a;
+    font-family: 'Inter', sans-serif !important;
+    color: #e2e8f0;
+  }
+
+  .light .preview-panel {
+    background: #f8fafc;
+    color: #1e293b;
+  }
+
+  .preview-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+  }
+
+  .light .preview-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .preview-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--vscode-accent);
+    box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.5);
+  }
+
+  .light .preview-card:hover {
+    box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.1);
+  }
+</style>

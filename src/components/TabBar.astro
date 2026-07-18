@@ -1,0 +1,107 @@
+---
+// Tab Bar Component
+
+interface Props {
+  activeTab?: string;
+}
+
+const { activeTab = 'index' } = Astro.props;
+
+const tabs = [
+  { id: 'index', name: 'index.html', icon: 'orange' },
+  { id: 'about', name: 'about.md', icon: 'blue' },
+  { id: 'skills', name: 'skills.json', icon: 'yellow' },
+  { id: 'projects', name: 'projects.json', icon: 'yellow' },
+  { id: 'contact', name: 'contact.json', icon: 'yellow' },
+];
+---
+
+<div class="flex justify-between items-center flex-shrink-0 overflow-hidden" style="height: 35px; background: var(--vscode-tabbar);">
+  <div class="flex items-end overflow-x-auto h-full" role="tablist" aria-label="Open files">
+    {tabs.map((tab) => (
+      <button
+        role="tab"
+        aria-selected={activeTab === tab.id}
+        class={`tab-item ${activeTab === tab.id ? 'active' : ''}`}
+        data-tab={tab.id}
+      >
+        <span class={`w-1.5 h-1.5 rounded-full flex-shrink-0 bg-${tab.icon}-400`}></span>
+        {tab.name}
+        <span class="text-[10px] opacity-40 ml-0.5" aria-hidden="true">×</span>
+      </button>
+    ))}
+  </div>
+
+  <!-- Editor Actions (VS Code Style) -->
+  <div class="flex items-center gap-1.5 px-3 h-full border-b border-[var(--vscode-border)] flex-shrink-0">
+    <button id="editor-action-split" class="p-1 rounded hover:bg-white/5 text-[var(--vscode-text-muted)] hover:text-white transition-colors" title="Split Editor (Code + Preview)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+        <line x1="12" y1="3" x2="12" y2="21"></line>
+      </svg>
+    </button>
+    <button id="editor-action-preview" class="p-1 rounded hover:bg-white/5 text-[var(--vscode-text-muted)] hover:text-white transition-colors" title="Open Preview">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="flex items-center justify-between px-4 flex-shrink-0 select-none" style="height: 26px; background: var(--vscode-tabbar); border-bottom: 1px solid var(--vscode-border);">
+  <div class="flex items-center gap-0.5 text-[11px] font-mono">
+    <span class="flex items-center gap-0.5">
+      <span style="color: var(--vscode-text-muted);">portfolio</span>
+    </span>
+    <span class="flex items-center gap-0.5">
+      <span class="mx-1" style="color: var(--vscode-text-muted);">›</span>
+      <span id="breadcrumb-file" style="color: var(--vscode-text);">index.html</span>
+    </span>
+  </div>
+  <div class="flex items-center gap-4 text-[11px] font-mono" style="color: var(--vscode-text-muted);">
+    <span>Ln 1, Col 1</span>
+    <span>HTML</span>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('[data-tab]');
+    const breadcrumb = document.getElementById('breadcrumb-file');
+    
+    const fileMap: Record<string, string> = {
+      index: 'index.html',
+      about: 'about.md',
+      skills: 'skills.json',
+      projects: 'projects.json',
+      contact: 'contact.json',
+    };
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const sectionId = (tab as HTMLElement).dataset.section || (tab as HTMLElement).dataset.tab;
+        if (breadcrumb && sectionId) {
+          breadcrumb.textContent = fileMap[sectionId] || 'index.html';
+        }
+      });
+    });
+
+    // Editor Action Buttons
+    const btnSplit = document.getElementById('editor-action-split');
+    const btnPreview = document.getElementById('editor-action-preview');
+
+    btnSplit?.addEventListener('click', () => {
+      if ((window as any).updateViewMode) {
+        (window as any).updateViewMode('split');
+      }
+    });
+
+    btnPreview?.addEventListener('click', () => {
+      if ((window as any).updateViewMode) {
+        (window as any).updateViewMode('preview');
+      }
+    });
+  });
+</script>

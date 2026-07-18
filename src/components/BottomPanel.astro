@@ -1,0 +1,98 @@
+---
+// Bottom Panel Component
+import aboutData from '../data/about.json';
+---
+
+<div id="bottom-panel" class="flex-shrink-0 overflow-hidden transition-all duration-200 flex flex-col" style="height: 0px; background: var(--vscode-panel); border-top: 1px solid var(--vscode-border);">
+  <div class="flex items-center flex-shrink-0" style="height: 35px; background: var(--vscode-tabbar); border-bottom: 1px solid var(--vscode-border);" role="tablist" aria-label="Panel tabs">
+    <button class="h-full px-4 text-[11px] font-mono uppercase tracking-wider border-t-2 border-t-[#007acc] transition-colors duration-100" style="color: var(--vscode-text);" role="tab" aria-selected="true" data-panel="contact">
+      Contact
+    </button>
+    <button class="h-full px-4 text-[11px] font-mono uppercase tracking-wider border-t-2 border-transparent transition-colors duration-100" style="color: var(--vscode-text-muted);" role="tab" aria-selected="false" data-panel="output">
+      Output
+    </button>
+    <button class="h-full px-4 text-[11px] font-mono uppercase tracking-wider border-t-2 border-transparent transition-colors duration-100" style="color: var(--vscode-text-muted);" role="tab" aria-selected="false" data-panel="quicklinks">
+      Quick Links
+    </button>
+    <div class="flex-1"></div>
+    <button id="close-panel" class="w-9 h-full flex items-center justify-center transition-colors" style="color: var(--vscode-text-muted);" aria-label="Close panel">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
+    </button>
+  </div>
+  
+  <div class="flex-1 overflow-y-auto font-mono text-xs leading-relaxed">
+    <!-- Contact Panel -->
+    <div id="panel-contact" class="p-5 space-y-4" role="tabpanel">
+      <div>
+        <p class="mb-2" style="color: var(--vscode-text-muted);">// {aboutData.name}</p>
+        <p><span class="text-[#9CDCFE]">"name"</span><span style="color: var(--vscode-text-muted);">: </span><span class="text-[#CE9178]">"{aboutData.name}"</span></p>
+        <p><span class="text-[#9CDCFE]">"email"</span><span style="color: var(--vscode-text-muted);">: </span><a href={`mailto:${aboutData.email}`} class="text-[#CE9178] hover:text-[#007acc] transition-colors">"{aboutData.email}"</a></p>
+        <p><span class="text-[#9CDCFE]">"github"</span><span style="color: var(--vscode-text-muted);">: </span><a href={aboutData.github} target="_blank" class="text-[#CE9178] hover:text-[#007acc] transition-colors">"{aboutData.github}"</a></p>
+        <p><span class="text-[#9CDCFE]">"location"</span><span style="color: var(--vscode-text-muted);">: </span><span class="text-[#CE9178]">"{aboutData.location}"</span></p>
+      </div>
+    </div>
+
+    <!-- Output Panel -->
+    <div id="panel-output" class="p-5 space-y-1 hidden" role="tabpanel">
+      <p style="color: var(--vscode-text-muted);">[Portfolio] Initializing workspace...</p>
+      <p style="color: var(--vscode-text-muted);">Loading files...</p>
+      <p class="animate-pulse select-none" style="color: var(--vscode-accent);">▌</p>
+    </div>
+
+    <!-- Quick Links Panel -->
+    <div id="panel-quicklinks" class="p-4 hidden" role="tabpanel">
+      <h4 class="font-mono text-[10px] uppercase tracking-wider mb-2" style="color: var(--vscode-text-muted);">Quick Links</h4>
+      <div class="grid grid-cols-2 gap-x-3 gap-y-0.5">
+        <a href="#about" class="text-[11px] hover:text-white dark:hover:text-white transition-colors leading-relaxed" style="color: var(--vscode-text-muted);">About</a>
+        <a href="#skills" class="text-[11px] hover:text-white dark:hover:text-white transition-colors leading-relaxed" style="color: var(--vscode-text-muted);">Skills</a>
+        <a href="#projects" class="text-[11px] hover:text-white dark:hover:text-white transition-colors leading-relaxed" style="color: var(--vscode-text-muted);">Projects</a>
+        <a href="#contact" class="text-[11px] hover:text-white dark:hover:text-white transition-colors leading-relaxed" style="color: var(--vscode-text-muted);">Contact</a>
+        <a href={aboutData.github} target="_blank" class="text-[11px] hover:text-white dark:hover:text-white transition-colors leading-relaxed" style="color: var(--vscode-text-muted);">GitHub</a>
+        <a href={`mailto:${aboutData.email}`} class="text-[11px] hover:text-white dark:hover:text-white transition-colors leading-relaxed" style="color: var(--vscode-text-muted);">Email</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const panel = document.getElementById('bottom-panel');
+    const panelTabs = document.querySelectorAll('[data-panel]');
+    const panelContents = {
+      contact: document.getElementById('panel-contact'),
+      output: document.getElementById('panel-output'),
+      quicklinks: document.getElementById('panel-quicklinks'),
+    };
+    const closeBtn = document.getElementById('close-panel');
+
+    // Toggle panel
+    panelTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const panelId = (tab as HTMLElement).dataset.panel;
+        
+        // Update tab states
+        panelTabs.forEach((t) => {
+          (t as HTMLElement).style.color = 'var(--vscode-text-muted)';
+          (t as HTMLElement).style.borderTopColor = 'transparent';
+        });
+        (tab as HTMLElement).style.color = 'var(--vscode-text)';
+        (tab as HTMLElement).style.borderTopColor = '#007acc';
+
+        // Show/hide panels
+        Object.values(panelContents).forEach((content) => {
+          content?.classList.add('hidden');
+        });
+        panelContents[panelId as keyof typeof panelContents]?.classList.remove('hidden');
+      });
+    });
+
+    // Close panel
+    closeBtn?.addEventListener('click', () => {
+      if (panel) {
+        panel.style.height = '0px';
+      }
+    });
+  });
+</script>

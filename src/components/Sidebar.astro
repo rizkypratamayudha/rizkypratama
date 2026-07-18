@@ -1,0 +1,124 @@
+---
+// Sidebar Component - File Tree
+import skillsData from '../data/skills.json';
+import projectsData from '../data/projects.json';
+
+interface Props {
+  activeSection?: string;
+}
+
+const { activeSection = 'index' } = Astro.props;
+
+const sections = [
+  { id: 'index', name: 'index.html', icon: 'orange' },
+  { id: 'about', name: 'about.md', icon: 'blue' },
+  { id: 'skills', name: 'skills.json', icon: 'yellow' },
+  { id: 'projects', name: 'projects.json', icon: 'yellow' },
+  { id: 'contact', name: 'contact.json', icon: 'yellow' },
+];
+---
+
+<aside class="relative z-20 flex-shrink-0 flex flex-col overflow-hidden transition-all duration-200 w-0 lg:w-64 sidebar" style="background: var(--vscode-sidebar);">
+  <div class="flex items-center px-4 h-9 flex-shrink-0" style="border-bottom: 1px solid var(--vscode-border);">
+    <span class="text-[10px] font-mono uppercase tracking-[0.2em] select-none" style="color: var(--vscode-text-muted);">Explorer</span>
+  </div>
+  
+  <div class="flex flex-col flex-1 overflow-hidden min-h-0">
+    <!-- Workspace Folder -->
+    <div class="flex items-center gap-1.5 px-3 py-1.5 select-none flex-shrink-0">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" class="flex-shrink-0" style="color: var(--vscode-text-muted);">
+        <path d="M2 3l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+      <span class="text-[11px] font-mono uppercase tracking-wider" style="color: var(--vscode-text-muted);">PORTFOLIO</span>
+    </div>
+
+    <!-- File Tree -->
+    <nav class="flex-1 overflow-y-auto pb-4">
+      <!-- Root Files -->
+      {sections.map((section) => (
+        <button
+          class={`file-item ${activeSection === section.id ? 'active' : ''}`}
+          data-section={section.id}
+          style="padding-left: 20px;"
+        >
+          <span class={`w-2 h-2 rounded-full flex-shrink-0 bg-${section.icon}-400`}></span>
+          <span class="truncate flex-1">{section.name}</span>
+          {activeSection === section.id && (
+            <span class="w-1.5 h-1.5 rounded-full mr-2 flex-shrink-0" style="background: #F5A100;"></span>
+          )}
+        </button>
+      ))}
+
+      <!-- Skills Folder -->
+      <div class="folder-item" style="padding-left: 20px;" id="skills-folder">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="flex-shrink-0">
+          <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"></path>
+        </svg>
+        <span class="text-[12px] font-mono truncate">skills/</span>
+      </div>
+
+      <!-- Skills Subfolders -->
+      <div id="skills-children" class="hidden">
+        {Object.entries(skillsData).map(([category, skills]) => (
+          <div>
+            <div class="folder-item" style="padding-left: 32px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="flex-shrink-0">
+                <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"></path>
+              </svg>
+              <span class="text-[12px] font-mono truncate">{category}/</span>
+            </div>
+            {skills.map((skill) => (
+              <button
+                class="file-item"
+                style="padding-left: 44px;"
+                data-skill={skill.name}
+              >
+                <span class="w-2 h-2 rounded-full flex-shrink-0" style={`background: ${skill.color};`}></span>
+                <span class="truncate flex-1">{skill.name.toLowerCase()}.js</span>
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <!-- Projects Folder -->
+      <div class="folder-item" style="padding-left: 20px;" id="projects-folder">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="flex-shrink-0">
+          <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"></path>
+        </svg>
+        <span class="text-[12px] font-mono truncate">projects/</span>
+      </div>
+
+      <!-- Projects Files -->
+      <div id="projects-children" class="hidden">
+        {projectsData.map((project) => (
+          <button
+            class="file-item"
+            style="padding-left: 32px;"
+            data-project={project.id}
+          >
+            <span class="w-2 h-2 rounded-full flex-shrink-0 bg-green-400"></span>
+            <span class="truncate flex-1">project{project.id}.json</span>
+          </button>
+        ))}
+      </div>
+    </nav>
+  </div>
+</aside>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const skillsFolder = document.getElementById('skills-folder');
+    const skillsChildren = document.getElementById('skills-children');
+    const projectsFolder = document.getElementById('projects-folder');
+    const projectsChildren = document.getElementById('projects-children');
+
+    skillsFolder?.addEventListener('click', () => {
+      skillsChildren?.classList.toggle('hidden');
+    });
+
+    projectsFolder?.addEventListener('click', () => {
+      projectsChildren?.classList.toggle('hidden');
+    });
+  });
+</script>

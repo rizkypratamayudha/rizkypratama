@@ -1,0 +1,87 @@
+---
+// Loading Screen Component
+---
+
+<div id="loading-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center" style="background: #1e1e1e;">
+  <div class="flex flex-col items-center gap-4">
+    <!-- Terminal animation -->
+    <div class="w-80 rounded-lg overflow-hidden" style="background: #252526; border: 1px solid rgba(255,255,255,0.1);">
+      <div class="flex items-center gap-2 px-3 py-2" style="background: #333333;">
+        <div class="w-3 h-3 rounded-full" style="background: #ff5f56;"></div>
+        <div class="w-3 h-3 rounded-full" style="background: #ffbd2e;"></div>
+        <div class="w-3 h-3 rounded-full" style="background: #27c93f;"></div>
+      </div>
+      <div class="p-4 font-mono text-xs">
+        <div class="flex items-center gap-2 mb-2">
+          <span style="color: #6a9955;">$</span>
+          <span id="loading-text" style="color: #d4d4d4;"></span>
+          <span class="animate-pulse" style="color: #007acc;">▌</span>
+        </div>
+        <div id="loading-progress" class="mt-2">
+          <div class="h-1 rounded" style="background: #333333;">
+            <div id="loading-bar" class="h-full rounded transition-all duration-300" style="background: #007acc; width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Logo -->
+    <div class="flex items-center gap-2 text-sm font-mono" style="color: #858585;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="color: #F5A100;">
+        <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"></path>
+      </svg>
+      <span>Portfolio</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const loadingScreen = document.getElementById('loading-screen');
+    const loadingText = document.getElementById('loading-text');
+    const loadingBar = document.getElementById('loading-bar');
+
+    const messages = [
+      'Initializing workspace...',
+      'Loading files...',
+      'Compiling components...',
+      'Starting server...',
+      'Ready!',
+    ];
+
+    let progress = 0;
+    let messageIndex = 0;
+
+    const interval = setInterval(() => {
+      progress += Math.random() * 25 + 10;
+      if (progress > 100) progress = 100;
+
+      if (loadingBar) {
+        loadingBar.style.width = `${progress}%`;
+      }
+
+      if (progress > (messageIndex + 1) * 20 && messageIndex < messages.length - 1) {
+        messageIndex++;
+        if (loadingText) {
+          loadingText.textContent = messages[messageIndex];
+        }
+      }
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          loadingScreen?.classList.add('opacity-0');
+          loadingScreen?.classList.add('transition-opacity');
+          loadingScreen?.classList.add('duration-500');
+          setTimeout(() => {
+            loadingScreen?.classList.add('hidden');
+          }, 500);
+        }, 300);
+      }
+    }, 200);
+
+    if (loadingText) {
+      loadingText.textContent = messages[0];
+    }
+  });
+</script>
