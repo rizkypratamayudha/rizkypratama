@@ -5,47 +5,46 @@ labels: ["project"]
 body:
   - type: markdown
     attributes:
-      value: |
-        Terima kasih telah menggunakan form ini untuk menambahkan proyek baru ke portofolio Anda.
+      value: "Terima kasih telah menggunakan form ini untuk menambahkan proyek baru ke portofolio Anda."
   - type: input
     id: description
     attributes:
       label: Description
-      description: Deskripsi singkat tentang proyek ini.
-      placeholder: Contoh: Aplikasi mobile untuk pelaporan jalan rusak.
+      description: "Deskripsi singkat tentang proyek ini."
+      placeholder: "Contoh: Aplikasi mobile untuk pelaporan jalan rusak."
     validations:
       required: true
   - type: input
     id: technologies
     attributes:
       label: Technologies
-      description: Daftar teknologi yang digunakan (pisahkan dengan koma).
-      placeholder: Contoh: Laravel, React, Tailwind CSS
+      description: "Daftar teknologi yang digunakan (pisahkan dengan koma)."
+      placeholder: "Contoh: Laravel, React, Tailwind CSS"
     validations:
       required: true
   - type: textarea
     id: image
     attributes:
       label: Image
-      description: Tarik dan lepas (drag & drop) gambar proyek Anda ke kotak ini untuk mengunggahnya secara otomatis ke server GitHub.
-      placeholder: Tarik gambar Anda ke sini...
+      description: "Tarik dan lepas (drag & drop) gambar proyek Anda ke kotak ini untuk mengunggahnya secara otomatis ke server GitHub."
+      placeholder: "Tarik gambar Anda ke sini..."
   - type: input
     id: github_link
     attributes:
       label: GitHub Link
-      description: Tautan ke kode sumber proyek.
-      placeholder: https://github.com/...
+      description: "Tautan ke kode sumber proyek."
+      placeholder: "https://github.com/..."
   - type: input
     id: live_demo
     attributes:
       label: Live Demo
-      description: Tautan demo langsung (isi '#' jika tidak ada).
-      placeholder: https://demo.com
+      description: "Tautan demo langsung (isi '#' jika tidak ada)."
+      placeholder: "https://demo.com"
   - type: dropdown
     id: status
     attributes:
       label: Status
-      description: Status pengembangan proyek saat ini.
+      description: "Status pengembangan proyek saat ini."
       options:
         - completed
         - in-progress

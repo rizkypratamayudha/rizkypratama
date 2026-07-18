@@ -5,13 +5,12 @@ labels: ["skill"]
 body:
   - type: markdown
     attributes:
-      value: |
-        Form ini digunakan untuk menambahkan keahlian (skill) baru ke dalam dashboard visual.
+      value: "Form ini digunakan untuk menambahkan keahlian (skill) baru ke dalam dashboard visual."
   - type: dropdown
     id: category
     attributes:
       label: Category
-      description: Kategori kelompok keahlian.
+      description: "Kategori kelompok keahlian."
       options:
         - backend
         - frontend
@@ -23,7 +22,7 @@ body:
     id: color
     attributes:
       label: Color
-      description: Kode warna hex khusus untuk brand keahlian ini.
-      placeholder: Contoh: #FF2D20 (Laravel), #02569B (Flutter)
+      description: "Kode warna hex khusus untuk brand keahlian ini."
+      placeholder: "Contoh: #FF2D20 (Laravel), #02569B (Flutter)"
     validations:
       required: true
