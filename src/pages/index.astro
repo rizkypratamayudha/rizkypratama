@@ -298,6 +298,16 @@ import LoadingScreen from '../components/LoadingScreen.astro';
               `).join('');
             }
           }
+
+          const idxSkeleton = document.getElementById('preview-index-skeleton');
+          const idxContent = document.getElementById('preview-index-content');
+          if (idxSkeleton) idxSkeleton.remove();
+          if (idxContent) idxContent.classList.remove('hidden');
+
+          const abtSkeleton = document.getElementById('preview-about-skeleton');
+          const abtContent = document.getElementById('preview-about-content');
+          if (abtSkeleton) abtSkeleton.remove();
+          if (abtContent) abtContent.classList.remove('hidden');
         }
 
         const totalSkills = Object.values(skills).flat().length;

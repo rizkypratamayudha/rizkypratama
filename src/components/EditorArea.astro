@@ -43,7 +43,23 @@ const { activeSection = 'index' } = Astro.props;
         <!-- Preview Panel -->
         <div class="preview-panel overflow-y-auto p-6 md:p-12 flex-1 min-w-0">
           <div class="max-w-2xl mx-auto flex flex-col justify-center h-full min-h-[70vh]">
-            <div class="space-y-6">
+            <!-- Skeleton Loader -->
+            <div id="preview-index-skeleton" class="space-y-6 animate-pulse">
+              <div class="h-6 bg-slate-800/40 rounded-full w-28"></div>
+              <div class="h-12 bg-gradient-to-r from-slate-800/60 to-slate-800/20 rounded-lg w-3/4"></div>
+              <div class="h-8 bg-slate-800/40 rounded-lg w-1/2"></div>
+              <div class="space-y-2.5">
+                <div class="h-4 bg-slate-800/30 rounded w-full"></div>
+                <div class="h-4 bg-slate-800/30 rounded w-5/6"></div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 max-w-md">
+                <div class="h-14 bg-slate-800/20 rounded-lg"></div>
+                <div class="h-14 bg-slate-800/20 rounded-lg"></div>
+              </div>
+            </div>
+
+            <!-- Main Content (Hidden until loaded) -->
+            <div id="preview-index-content" class="hidden space-y-6">
               <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono bg-blue-500/10 text-[#007acc] dark:text-[#38bdf8] border border-blue-500/20">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                 Ready for Projects
@@ -121,53 +137,79 @@ const { activeSection = 'index' } = Astro.props;
               <div class="w-12 h-1 bg-[#007acc] rounded"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div class="md:col-span-1 flex flex-col items-center text-center p-5 rounded-lg bg-black/10 dark:bg-white/5 border border-slate-700/30">
-                <!-- Glowing Avatar Placeholder -->
-                <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-500 to-teal-400 p-[3px] shadow-lg shadow-blue-500/20 mb-4 overflow-hidden relative">
-                  <div id="preview-about-avatar-fallback" class="w-full h-full rounded-full bg-slate-800 flex items-center justify-center text-2xl font-bold font-mono text-white">
-                    {aboutData.name.split(' ').map(w => w[0]).join('').slice(0, 3)}
+            <!-- Skeleton Loader -->
+            <div id="preview-about-skeleton" class="space-y-8 animate-pulse">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-1 flex flex-col items-center text-center p-5 rounded-lg border border-slate-700/20 bg-slate-800/10">
+                  <div class="w-24 h-24 rounded-full bg-slate-800/40 mb-4"></div>
+                  <div class="h-4 bg-slate-800/50 rounded w-2/3 mb-2"></div>
+                  <div class="h-3 bg-slate-800/30 rounded w-1/2 mb-4"></div>
+                  <div class="w-full border-t border-slate-700/20 my-4"></div>
+                  <div class="space-y-2 w-full">
+                    <div class="h-3 bg-slate-800/30 rounded w-5/6"></div>
+                    <div class="h-3 bg-slate-800/30 rounded w-2/3"></div>
                   </div>
-                  <img 
-                    id="preview-about-avatar"
-                    src={aboutData.avatar} 
-                    alt="Avatar" 
-                    class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 rounded-full" 
-                    onload="this.classList.remove('opacity-0')" 
-                    onerror="this.style.display='none'" 
-                  />
                 </div>
-                <h3 id="preview-about-name" class="font-bold text-sm text-slate-200">{aboutData.name}</h3>
-                <p id="preview-about-title" class="text-xs text-slate-400 mt-1">{aboutData.title}</p>
-                <div class="w-full border-t border-slate-700/50 my-4"></div>
-                <div class="space-y-2 w-full text-left text-xs font-mono text-slate-400">
-                  <p id="preview-about-email" class="truncate">📧 {aboutData.email}</p>
-                  <p id="preview-about-location-detail">📍 {aboutData.location}</p>
+                <div class="md:col-span-2 space-y-4">
+                  <div class="h-4 bg-slate-800/40 rounded w-full"></div>
+                  <div class="h-4 bg-slate-800/40 rounded w-5/6"></div>
+                  <div class="h-4 bg-slate-800/40 rounded w-4/5"></div>
+                  <div class="h-4 bg-slate-800/30 rounded w-full"></div>
+                  <div class="h-4 bg-slate-800/30 rounded w-3/4"></div>
                 </div>
-              </div>
-
-              <div id="preview-about-bio-container" class="md:col-span-2 space-y-4 text-sm leading-relaxed text-slate-300">
-                {aboutData.bio.split('\n\n').map((paragraph) => (
-                  <p>{paragraph}</p>
-                ))}
               </div>
             </div>
 
-            <!-- Education Timeline -->
-            <div class="space-y-4">
-              <h3 class="text-lg font-semibold text-slate-200">Education Timeline</h3>
-              <div id="preview-about-timeline" class="relative pl-6 border-l-2 border-slate-700/80 ml-3 space-y-6">
-                {aboutData.education_timeline.map((item) => (
-                  <div class="relative">
-                    <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-[#007acc] border-4 border-slate-900 shadow"></div>
-                    <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">{item.period}</span>
-                    <h4 class="font-bold text-slate-200 mt-2 text-sm">{item.institution}</h4>
-                    <p class="text-xs text-slate-400 font-mono mt-0.5">{item.major}</p>
-                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">{item.description}</p>
+            <!-- Main Content (Hidden until loaded) -->
+            <div id="preview-about-content" class="hidden space-y-8">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-1 flex flex-col items-center text-center p-5 rounded-lg bg-black/10 dark:bg-white/5 border border-slate-700/30">
+                  <!-- Glowing Avatar Placeholder -->
+                  <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-500 to-teal-400 p-[3px] shadow-lg shadow-blue-500/20 mb-4 overflow-hidden relative">
+                    <div id="preview-about-avatar-fallback" class="w-full h-full rounded-full bg-slate-800 flex items-center justify-center text-2xl font-bold font-mono text-white">
+                      {aboutData.name.split(' ').map(w => w[0]).join('').slice(0, 3)}
+                    </div>
+                    <img 
+                      id="preview-about-avatar"
+                      src={aboutData.avatar} 
+                      alt="Avatar" 
+                      class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 rounded-full" 
+                      onload="this.classList.remove('opacity-0')" 
+                      onerror="this.style.display='none'" 
+                    />
                   </div>
-                ))}
+                  <h3 id="preview-about-name" class="font-bold text-sm text-slate-200">{aboutData.name}</h3>
+                  <p id="preview-about-title" class="text-xs text-slate-400 mt-1">{aboutData.title}</p>
+                  <div class="w-full border-t border-slate-700/50 my-4"></div>
+                  <div class="space-y-2 w-full text-left text-xs font-mono text-slate-400">
+                    <p id="preview-about-email" class="truncate">📧 {aboutData.email}</p>
+                    <p id="preview-about-location-detail">📍 {aboutData.location}</p>
+                  </div>
+                </div>
+
+                <div id="preview-about-bio-container" class="md:col-span-2 space-y-4 text-sm leading-relaxed text-slate-300">
+                  {aboutData.bio.split('\n\n').map((paragraph) => (
+                    <p>{paragraph}</p>
+                  ))}
+                </div>
               </div>
-            </div>
+
+              <!-- Education Timeline -->
+              <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-slate-200">Education Timeline</h3>
+                <div id="preview-about-timeline" class="relative pl-6 border-l-2 border-slate-700/80 ml-3 space-y-6">
+                  {aboutData.education_timeline.map((item) => (
+                    <div class="relative">
+                      <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-[#007acc] border-4 border-slate-900 shadow"></div>
+                      <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">{item.period}</span>
+                      <h4 class="font-bold text-slate-200 mt-2 text-sm">{item.institution}</h4>
+                      <p class="text-xs text-slate-400 font-mono mt-0.5">{item.major}</p>
+                      <p class="text-xs text-slate-500 mt-1 leading-relaxed">{item.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div></div>
           </div>
         </div>
         
