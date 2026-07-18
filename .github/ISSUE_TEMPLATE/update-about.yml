@@ -37,6 +37,18 @@ body:
     attributes:
       label: Education
       placeholder: "Contoh: Politeknik Negeri Malang"
+  - type: input
+    id: email
+    attributes:
+      label: Email
+      description: "Alamat email yang tampil di halaman Contact."
+      placeholder: "Contoh: nama@email.com"
+  - type: input
+    id: github
+    attributes:
+      label: GitHub URL
+      description: "Link profil GitHub Anda."
+      placeholder: "Contoh: https://github.com/username"
   - type: textarea
     id: avatar
     attributes:

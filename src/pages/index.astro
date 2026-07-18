@@ -215,12 +215,14 @@ import LoadingScreen from '../components/LoadingScreen.astro';
               } catch(e) {}
             }
             about = {
-              name: issue.title,
+              name: issue.title.replace(/^\[about\]\s*/i, '').trim(),
               title: metadata.title || '',
               description: metadata.description || '',
               bio: metadata.biography || '',
               location: metadata.location || '',
               education: metadata.education || '',
+              email: metadata.email || '',
+              github: metadata.github || '',
               avatar: extractUrl(metadata.avatar || ''),
               cv: extractUrl(metadata.cv || ''),
               education_timeline: timeline.length > 0 ? timeline : null
@@ -298,6 +300,24 @@ import LoadingScreen from '../components/LoadingScreen.astro';
               `).join('');
             }
           }
+
+          // Update Contact section links
+          const contactEmail = document.getElementById('preview-contact-email') as HTMLAnchorElement;
+          if (contactEmail && about.email) contactEmail.setAttribute('href', `mailto:${about.email}`);
+          const contactGithub = document.getElementById('preview-contact-github') as HTMLAnchorElement;
+          if (contactGithub && about.github) contactGithub.setAttribute('href', about.github);
+
+          // Update Contact code panel
+          const codeContactName = document.getElementById('code-contact-name');
+          if (codeContactName) codeContactName.textContent = about.name;
+          const codeContactTitle = document.getElementById('code-contact-title');
+          if (codeContactTitle) codeContactTitle.textContent = about.title;
+          const codeContactEmail = document.getElementById('code-contact-email');
+          if (codeContactEmail) codeContactEmail.textContent = about.email;
+          const codeContactGithub = document.getElementById('code-contact-github');
+          if (codeContactGithub) codeContactGithub.textContent = about.github;
+          const codeContactLoc = document.getElementById('code-contact-location');
+          if (codeContactLoc) codeContactLoc.textContent = about.location;
 
           const idxSkeleton = document.getElementById('preview-index-skeleton');
           const idxContent = document.getElementById('preview-index-content');

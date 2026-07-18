@@ -225,24 +225,17 @@ const { activeSection = 'index' } = Astro.props;
           <pre id="code-skills-json" class="font-mono text-xs md:text-sm leading-relaxed" style="color: #d4d4d4;">
             <p class="comment">/**</p>
             <p class="comment"> * Skills & Technologies</p>
+            <p class="comment"> * @source GitHub Issues (label: skill)</p>
+            <p class="comment"> * @sync   Fetched at runtime — close an issue to publish</p>
             <p class="comment"> */</p>
+            <br/>
+            <p class="comment">// ⏳ Syncing skills from GitHub Issues...</p>
             <p class="bracket">&#123;</p>
-            {Object.entries(skillsData).map(([category, skills], index) => (
-              <div class="pl-4">
-                <p><span class="key">"{category}"</span>: <span class="bracket">[</span></p>
-                {skills.map((skill, skillIndex) => (
-                  <div class="pl-4">
-                    <p>
-                      <span class="bracket">&#123;</span>
-                      <span class="key">"name"</span>: <span class="string">"{skill.name}"</span>,
-                      <span class="key">"color"</span>: <span class="string">"{skill.color}"</span>
-                      <span class="bracket">&#125;</span>{skillIndex < skills.length - 1 ? ',' : ''}
-                    </p>
-                  </div>
-                ))}
-                <p><span class="bracket">]</span>{index < Object.keys(skillsData).length - 1 ? ',' : ''}</p>
-              </div>
-            ))}
+            <div class="pl-4">
+              <p><span class="key">"status"</span>: <span class="string">"loading"</span>,</p>
+              <p><span class="key">"source"</span>: <span class="string">"github-issues"</span>,</p>
+              <p><span class="key">"filter"</span>: <span class="string">"state=closed&label=skill"</span></p>
+            </div>
             <p class="bracket">&#125;</p>
           </pre>
         </div>
@@ -288,22 +281,21 @@ const { activeSection = 'index' } = Astro.props;
           <pre id="code-projects-json" class="font-mono text-xs md:text-sm leading-relaxed" style="color: #d4d4d4;">
             <p class="comment">/**</p>
             <p class="comment"> * Projects Portfolio</p>
+            <p class="comment"> * @source GitHub Issues (label: project)</p>
+            <p class="comment"> * @sync   Fetched at runtime — close an issue to publish</p>
             <p class="comment"> */</p>
+            <br/>
+            <p class="comment">// ⏳ Syncing projects from GitHub Issues...</p>
             <p class="bracket">[</p>
-            {projectsData.map((project, index) => (
+            <div class="pl-4">
+              <p><span class="bracket">&#123;</span></p>
               <div class="pl-4">
-                <p><span class="bracket">&#123;</span></p>
-                <div class="pl-4">
-                  <p><span class="key">"id"</span>: <span style="color: #b5cea8;">{project.id}</span>,</p>
-                  <p><span class="key">"title"</span>: <span class="string">"{project.title}"</span>,</p>
-                  <p><span class="key">"tech"</span>: <span class="bracket">[</span>{project.tech.map((t, i) => (
-                    <span><span class="string">"{t}"</span>{i < project.tech.length - 1 ? ', ' : ''}</span>
-                  ))}<span class="bracket">]</span>,</p>
-                  <p><span class="key">"status"</span>: <span style="color: #4ec9b0;">"{project.status}"</span></p>
-                </div>
-                <p><span class="bracket">&#125;</span>{index < projectsData.length - 1 ? ',' : ''}</p>
+                <p><span class="key">"status"</span>: <span class="string">"loading"</span>,</p>
+                <p><span class="key">"source"</span>: <span class="string">"github-issues"</span>,</p>
+                <p><span class="key">"filter"</span>: <span class="string">"state=closed&label=project"</span></p>
               </div>
-            ))}
+              <p><span class="bracket">&#125;</span></p>
+            </div>
             <p class="bracket">]</p>
           </pre>
         </div>
@@ -350,11 +342,11 @@ const { activeSection = 'index' } = Astro.props;
             <p class="comment">// Contact Information</p>
             <p class="bracket">&#123;</p>
             <div class="pl-4">
-              <p><span class="key">"name"</span>: <span class="string">"{aboutData.name}"</span>,</p>
-              <p><span class="key">"title"</span>: <span class="string">"{aboutData.title}"</span>,</p>
-              <p><span class="key">"email"</span>: <span class="string">"{aboutData.email}"</span>,</p>
-              <p><span class="key">"github"</span>: <span class="string">"{aboutData.github}"</span>,</p>
-              <p><span class="key">"location"</span>: <span class="string">"{aboutData.location}"</span>,</p>
+              <p><span class="key">"name"</span>: <span class="string">"<span id="code-contact-name">{aboutData.name}</span>"</span>,</p>
+              <p><span class="key">"title"</span>: <span class="string">"<span id="code-contact-title">{aboutData.title}</span>"</span>,</p>
+              <p><span class="key">"email"</span>: <span class="string">"<span id="code-contact-email">{aboutData.email}</span>"</span>,</p>
+              <p><span class="key">"github"</span>: <span class="string">"<span id="code-contact-github">{aboutData.github}</span>"</span>,</p>
+              <p><span class="key">"location"</span>: <span class="string">"<span id="code-contact-location">{aboutData.location}</span>"</span>,</p>
               <p><span class="key">"availableForFreelance"</span>: <span style="color: #4ec9b0;">true</span></p>
             </div>
             <p class="bracket">&#125;</p>
