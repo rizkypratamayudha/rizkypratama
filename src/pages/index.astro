@@ -108,6 +108,353 @@ import LoadingScreen from '../components/LoadingScreen.astro';
 
     (window as any).updateViewMode = updateViewMode;
 
+    // --- GitHub Issues CMS Integration ---
+    function logOutput(msg: string) {
+      const panel = document.getElementById('panel-output');
+      if (panel) {
+        const cursor = panel.querySelector('.animate-pulse');
+        if (cursor) cursor.remove();
+        
+        const p = document.createElement('p');
+        p.style.color = 'var(--vscode-text-muted)';
+        p.textContent = msg;
+        panel.appendChild(p);
+        
+        const newCursor = document.createElement('p');
+        newCursor.className = 'animate-pulse select-none';
+        newCursor.style.color = 'var(--vscode-accent)';
+        newCursor.textContent = '▌';
+        panel.appendChild(newCursor);
+        
+        panel.scrollTop = panel.scrollHeight;
+      }
+    }
+
+    function parseMarkdownBody(body: string) {
+      if (!body) return {} as Record<string, string>;
+      const data: Record<string, string> = {};
+      const sections = body.split('###');
+      sections.forEach(sec => {
+        const lines = sec.trim().split('\n');
+        if (lines.length > 0) {
+          const header = lines[0].trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+          const content = lines.slice(1).join('\n').trim();
+          if (header) {
+            data[header] = content;
+          }
+        }
+      });
+      return data;
+    }
+
+    async function syncGitHubIssues() {
+      logOutput('[GitHub Sync] Menghubungkan ke repositori GitHub rizkypratamayudha/rizkypratama...');
+      try {
+        const res = await fetch('https://api.github.com/repos/rizkypratamayudha/rizkypratama/issues?state=open&per_page=100');
+        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+        
+        const issues = await res.json();
+        logOutput(`[GitHub Sync] Berhasil terhubung. Menemukan ${issues.length} issue terbuka. Memproses...`);
+        
+        const projects: any[] = [];
+        const skills: Record<string, any[]> = {
+          backend: [],
+          frontend: [],
+          mobile: [],
+          tools: []
+        };
+        let about: any = null;
+
+        issues.forEach((issue: any) => {
+          const labels = issue.labels.map((l: any) => l.name.toLowerCase());
+          
+          if (labels.includes('project')) {
+            const metadata = parseMarkdownBody(issue.body || '');
+            projects.push({
+              id: issue.number,
+              title: issue.title,
+              description: metadata.description || '',
+              tech: metadata.technologies ? metadata.technologies.split(',').map((t: string) => t.trim()) : [],
+              image: metadata.image || '#',
+              github: metadata.github_link || '#',
+              demo: metadata.live_demo || '#',
+              status: metadata.status || 'completed'
+            });
+          } else if (labels.includes('skill')) {
+            const metadata = parseMarkdownBody(issue.body || '');
+            const category = (metadata.category || 'backend').toLowerCase();
+            if (skills[category]) {
+              skills[category].push({
+                name: issue.title,
+                color: metadata.color || '#007acc'
+              });
+            }
+          } else if (labels.includes('about')) {
+            const metadata = parseMarkdownBody(issue.body || '');
+            let timeline = [];
+            if (metadata.education_timeline) {
+              try {
+                timeline = JSON.parse(metadata.education_timeline);
+              } catch(e) {}
+            }
+            about = {
+              name: issue.title,
+              title: metadata.title || '',
+              description: metadata.description || '',
+              bio: metadata.biography || '',
+              location: metadata.location || '',
+              education: metadata.education || '',
+              avatar: metadata.avatar || '',
+              cv: metadata.cv || '',
+              education_timeline: timeline.length > 0 ? timeline : null
+            };
+          }
+        });
+
+        let updatedCount = 0;
+        
+        if (about) {
+          updatedCount++;
+          const indexNameG = document.getElementById('preview-index-name-gradient');
+          if (indexNameG) indexNameG.textContent = about.name;
+          const indexTitle = document.getElementById('preview-index-title');
+          if (indexTitle) indexTitle.textContent = about.title;
+          const indexDesc = document.getElementById('preview-index-desc');
+          if (indexDesc) indexDesc.textContent = about.description;
+          const indexLoc = document.getElementById('preview-index-location');
+          if (indexLoc) indexLoc.textContent = about.location;
+          const indexEdu = document.getElementById('preview-index-education');
+          if (indexEdu) indexEdu.textContent = about.education;
+          const indexCv = document.getElementById('preview-index-cv');
+          if (indexCv && about.cv) indexCv.setAttribute('href', about.cv);
+
+          const codeIdxName = document.getElementById('code-index-name');
+          if (codeIdxName) codeIdxName.textContent = about.name;
+          const codeIdxTitle = document.getElementById('code-index-title');
+          if (codeIdxTitle) codeIdxTitle.textContent = about.title;
+          const codeIdxDesc = document.getElementById('code-index-desc');
+          if (codeIdxDesc) codeIdxDesc.textContent = about.description;
+          const codeIdxGit = document.getElementById('code-index-github');
+          if (codeIdxGit && about.github) codeIdxGit.textContent = about.github;
+          const codeIdxEmail = document.getElementById('code-index-email');
+          if (codeIdxEmail) codeIdxEmail.textContent = about.email;
+
+          const aboutName = document.getElementById('preview-about-name');
+          if (aboutName) aboutName.textContent = about.name;
+          const aboutTitle = document.getElementById('preview-about-title');
+          if (aboutTitle) aboutTitle.textContent = about.title;
+          const aboutEmail = document.getElementById('preview-about-email');
+          if (aboutEmail) aboutEmail.textContent = `📧 ${about.email}`;
+          const aboutLocDet = document.getElementById('preview-about-location-detail');
+          if (aboutLocDet) aboutLocDet.textContent = `📍 ${about.location}`;
+
+          const codeAboutBio = document.getElementById('code-about-bio');
+          if (codeAboutBio) codeAboutBio.textContent = about.bio;
+
+          const avatarImg = document.getElementById('preview-about-avatar') as HTMLImageElement;
+          const avatarFallback = document.getElementById('preview-about-avatar-fallback');
+          if (avatarFallback) {
+            avatarFallback.textContent = about.name.split(' ').map((w: string) => w[0]).join('').slice(0, 3);
+          }
+          if (avatarImg && about.avatar) {
+            avatarImg.src = about.avatar;
+            avatarImg.style.display = 'block';
+            avatarImg.classList.add('opacity-0');
+          }
+
+          const bioContainer = document.getElementById('preview-about-bio-container');
+          if (bioContainer && about.bio) {
+            bioContainer.innerHTML = about.bio.split('\n\n').map((p: string) => `<p>${p}</p>`).join('');
+          }
+
+          if (about.education_timeline) {
+            const timelineContainer = document.getElementById('preview-about-timeline');
+            if (timelineContainer) {
+              timelineContainer.innerHTML = about.education_timeline.map((item: any) => `
+                <div class="relative">
+                  <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-[#007acc] border-4 border-slate-900 shadow"></div>
+                  <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">${item.period}</span>
+                  <h4 class="font-bold text-slate-200 mt-2 text-sm">${item.institution}</h4>
+                  <p class="text-xs text-slate-400 font-mono mt-0.5">${item.major}</p>
+                  <p class="text-xs text-slate-500 mt-1 leading-relaxed">${item.description}</p>
+                </div>
+              `).join('');
+            }
+          }
+        }
+
+        const totalSkills = Object.values(skills).flat().length;
+        if (totalSkills > 0) {
+          updatedCount++;
+          const skillsGrid = document.getElementById('preview-skills-grid');
+          if (skillsGrid) {
+            skillsGrid.innerHTML = Object.entries(skills).map(([category, list]) => {
+              if (list.length === 0) return '';
+              return `
+                <div class="preview-card p-6 rounded-xl space-y-4">
+                  <h3 class="font-semibold text-sm uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full" style="background: ${list[0]?.color || '#007acc'};"></span>
+                    ${category}
+                  </h3>
+                  <div class="flex flex-wrap gap-2.5 pt-1">
+                    ${list.map(skill => `
+                      <div 
+                        class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono border transition-all duration-305 hover:scale-[1.03]"
+                        style="background: ${skill.color}12; border-color: ${skill.color}25; color: var(--vscode-text);"
+                        onmouseover="this.style.background='${skill.color}22'; this.style.borderColor='${skill.color}60'; this.style.boxShadow='0 4px 12px -2px ${skill.color}30'"
+                        onmouseout="this.style.background='${skill.color}12'; this.style.borderColor='${skill.color}25'; this.style.boxShadow='none'"
+                      >
+                        <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background: ${skill.color}; box-shadow: 0 0 8px ${skill.color};"></span>
+                        <span>${skill.name}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
+
+          const codeSkillsJson = document.getElementById('code-skills-json');
+          if (codeSkillsJson) {
+            codeSkillsJson.innerHTML = `
+<span class="comment">/**</span>
+<span class="comment"> * Skills & Technologies (Synced from GitHub Issues)</span>
+<span class="comment"> */</span>
+<span class="bracket">&#123;</span>
+${Object.entries(skills).map(([category, list], index) => {
+  return `  <span class="key">"${category}"</span>: <span class="bracket">[</span>
+${list.map((skill, skillIndex) => `    <span class="bracket">&#123;</span> <span class="key">"name"</span>: <span class="string">"${skill.name}"</span>, <span class="key">"color"</span>: <span class="string">"${skill.color}"</span> <span class="bracket">&#125;</span>${skillIndex < list.length - 1 ? ',' : ''}`).join('\n')}
+  <span class="bracket">]</span>${index < Object.keys(skills).length - 1 ? ',' : ''}`;
+}).join('\n')}
+<span class="bracket">&#125;</span>
+            `;
+          }
+
+          const sidebarSkills = document.getElementById('skills-children');
+          if (sidebarSkills) {
+            sidebarSkills.innerHTML = Object.entries(skills).map(([category, list]) => {
+              if (list.length === 0) return '';
+              return `
+                <div>
+                  <div class="folder-item" style="padding-left: 32px;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="flex-shrink-0">
+                      <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"></path>
+                    </svg>
+                    <span class="text-[12px] font-mono truncate">${category}/</span>
+                  </div>
+                  ${list.map(skill => `
+                    <button class="file-item" style="padding-left: 44px;" data-skill="${skill.name}">
+                      <span class="w-2 h-2 rounded-full flex-shrink-0" style="background: ${skill.color};"></span>
+                      <span class="truncate flex-1">${skill.name.toLowerCase()}.js</span>
+                    </button>
+                  `).join('')}
+                </div>
+              `;
+            }).join('');
+          }
+        }
+
+        if (projects.length > 0) {
+          updatedCount++;
+          const projectsGrid = document.getElementById('preview-projects-grid');
+          if (projectsGrid) {
+            projectsGrid.innerHTML = projects.map(project => `
+              <div class="preview-card p-5 rounded-xl flex flex-col justify-between space-y-4">
+                <div class="h-32 rounded-lg overflow-hidden relative bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 flex items-center justify-center group">
+                  <span class="text-3xl font-bold font-mono tracking-wider text-slate-700/60 select-none uppercase">
+                    ${project.title.split(' ').map((w: string) => w[0]).join('').slice(0, 3)}
+                  </span>
+                  <img 
+                    src="${project.image}" 
+                    alt="${project.title}" 
+                    class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 rounded-lg" 
+                    onload="this.classList.remove('opacity-0')" 
+                    onerror="this.style.display='none'" 
+                  />
+                </div>
+
+                <div class="space-y-2">
+                  <div class="flex justify-between items-start">
+                    <h3 class="font-bold text-base text-slate-200 leading-snug">${project.title}</h3>
+                    <span class="text-[9px] font-mono px-2 py-0.5 rounded-full border flex-shrink-0 ${
+                      project.status === 'completed' 
+                        ? 'bg-green-500/10 text-green-400 border-green-500/25' 
+                        : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/25'
+                    }">
+                      ${project.status === 'completed' ? '✓ Completed' : '⚙ In Progress'}
+                    </span>
+                  </div>
+                  <p class="text-xs text-slate-400 leading-relaxed">${project.description}</p>
+                </div>
+
+                <div class="space-y-3.5 pt-2">
+                  <div class="flex flex-wrap gap-1.5">
+                    ${project.tech.map((tech: string) => `
+                      <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-slate-800/80 text-[#007acc] dark:text-[#38bdf8] border border-slate-700/60">
+                        ${tech}
+                      </span>
+                    `).join('')}
+                  </div>
+
+                  <div class="flex items-center gap-3 pt-1 border-t border-slate-800/60">
+                    ${project.github !== '#' ? `
+                      <a href="${project.github}" target="_blank" rel="noopener" class="text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1 transition-colors">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                        GitHub
+                      </a>
+                    ` : ''}
+                    ${project.demo !== '#' ? `
+                      <a href="${project.demo}" target="_blank" rel="noopener" class="text-xs font-semibold text-[#007acc] dark:text-[#38bdf8] hover:underline flex items-center gap-1 transition-colors">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"></path></svg>
+                        Live Demo
+                      </a>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            `).join('');
+          }
+
+          const codeProjectsJson = document.getElementById('code-projects-json');
+          if (codeProjectsJson) {
+            codeProjectsJson.innerHTML = `
+<span class="comment">/**</span>
+<span class="comment"> * Projects Portfolio (Synced from GitHub Issues)</span>
+<span class="comment"> */</span>
+<span class="bracket">[</span>
+${projects.map((project, index) => `  <span class="bracket">&#123;</span>
+    <span class="key">"id"</span>: <span style="color: #b5cea8;">${project.id}</span>,
+    <span class="key">"title"</span>: <span class="string">"${project.title}"</span>,
+    <span class="key">"tech"</span>: <span class="bracket">[</span>${project.tech.map((t: string) => `<span class="string">"${t}"</span>`).join(', ')}<span class="bracket">]</span>,
+    <span class="key">"status"</span>: <span style="color: #4ec9b0;">"${project.status}"</span>
+  <span class="bracket">&#125;</span>${index < projects.length - 1 ? ',' : ''}`).join('\n')}
+<span class="bracket">]</span>
+            `;
+          }
+
+          const sidebarProjects = document.getElementById('projects-children');
+          if (sidebarProjects) {
+            sidebarProjects.innerHTML = projects.map(project => `
+              <button class="file-item" style="padding-left: 32px;" data-project="${project.id}">
+                <span class="w-2 h-2 rounded-full flex-shrink-0 bg-green-400"></span>
+                <span class="truncate flex-1">project${project.id}.json</span>
+              </button>
+            `).join('');
+          }
+        }
+
+        if (updatedCount > 0) {
+          logOutput(`[GitHub Sync] Sinkronisasi selesai! Berhasil menyinkronkan data portofolio.`);
+        } else {
+          logOutput(`[GitHub Sync] Selesai. Tidak ditemukan issue berlabel 'about', 'skill', atau 'project'.`);
+        }
+      } catch (err) {
+        logOutput(`[GitHub Sync] Gagal sinkronisasi: ${(err as any).message}. Fallback ke lokal.`);
+      }
+    }
+
+    setTimeout(syncGitHubIssues, 1500);
+
     // Navigation logic
     const sidebarButtons = document.querySelectorAll('.file-item[data-section]');
     const tabButtons = document.querySelectorAll('.tab-item[data-tab]');
