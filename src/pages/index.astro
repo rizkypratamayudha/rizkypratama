@@ -156,11 +156,11 @@ import LoadingScreen from '../components/LoadingScreen.astro';
     async function syncGitHubIssues() {
       logOutput('[GitHub Sync] Menghubungkan ke repositori GitHub rizkypratamayudha/rizkypratama...');
       try {
-        const res = await fetch('https://api.github.com/repos/rizkypratamayudha/rizkypratama/issues?state=open&per_page=100');
+        const res = await fetch('https://api.github.com/repos/rizkypratamayudha/rizkypratama/issues?state=all&per_page=100');
         if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
         
         const issues = await res.json();
-        logOutput(`[GitHub Sync] Berhasil terhubung. Menemukan ${issues.length} issue terbuka. Memproses...`);
+        logOutput(`[GitHub Sync] Berhasil terhubung. Menemukan ${issues.length} issue (open/closed). Memproses...`);
         
         const projects: any[] = [];
         const skills: Record<string, any[]> = {
@@ -172,6 +172,7 @@ import LoadingScreen from '../components/LoadingScreen.astro';
         let about: any = null;
 
         issues.forEach((issue: any) => {
+          if (issue.pull_request) return;
           const labels = issue.labels.map((l: any) => l.name.toLowerCase());
           
           if (labels.includes('project')) {
