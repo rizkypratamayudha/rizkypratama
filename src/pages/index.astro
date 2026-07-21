@@ -730,10 +730,12 @@ ${projects.map((project, index) => `  <span class="bracket">&#123;</span>
 
     setTimeout(syncGitHubIssues, 1500);
 
-    // Navigation logic
+    // Navigation & Continuous Scroll Logic
     const sidebarButtons = document.querySelectorAll('.file-item[data-section]');
     const tabButtons = document.querySelectorAll('.tab-item[data-tab]');
-    const sections = document.querySelectorAll('[id^="section-"]');
+    const codeBlocks = document.querySelectorAll('.code-block');
+    const sections = document.querySelectorAll('section[data-section-name]');
+    const previewPanel = document.getElementById('main-preview-panel');
     const breadcrumb = document.getElementById('breadcrumb-file');
 
     const fileMap: Record<string, string> = {
@@ -744,7 +746,13 @@ ${projects.map((project, index) => `  <span class="bracket">&#123;</span>
       contact: 'contact.json',
     };
 
-    function setActiveSection(sectionId: string) {
+    let isProgrammaticScroll = false;
+    let currentActiveSection = '';
+
+    function setActiveSectionUI(sectionId: string) {
+      if (currentActiveSection === sectionId) return;
+      currentActiveSection = sectionId;
+
       // Update sidebar
       sidebarButtons.forEach((btn) => {
         const btnSection = (btn as HTMLElement).dataset.section;
@@ -767,14 +775,12 @@ ${projects.map((project, index) => `  <span class="bracket">&#123;</span>
         }
       });
 
-      // Update sections with animation
-      sections.forEach((section) => {
-        const sectionElement = section as HTMLElement;
-        if (sectionElement.id === `section-${sectionId}`) {
-          sectionElement.classList.remove('hidden');
-          sectionElement.style.animation = 'fadeIn 0.2s ease-out';
+      // Update code blocks in Code Panel
+      codeBlocks.forEach((block) => {
+        if (block.id === `code-block-${sectionId}`) {
+          block.classList.remove('hidden');
         } else {
-          sectionElement.classList.add('hidden');
+          block.classList.add('hidden');
         }
       });
 
@@ -784,12 +790,51 @@ ${projects.map((project, index) => `  <span class="bracket">&#123;</span>
       }
     }
 
+    function navigateToSection(sectionId: string) {
+      setActiveSectionUI(sectionId);
+
+      const targetSection = document.getElementById(`section-${sectionId}`);
+      if (targetSection && previewPanel) {
+        isProgrammaticScroll = true;
+        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => {
+          isProgrammaticScroll = false;
+        }, 800);
+      }
+    }
+
+    // Initialize first section UI
+    setActiveSectionUI('index');
+
+    // IntersectionObserver for Continuous Scroll
+    if (previewPanel && sections.length > 0) {
+      const observerOptions = {
+        root: previewPanel,
+        rootMargin: '-20% 0px -55% 0px',
+        threshold: 0
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        if (isProgrammaticScroll) return;
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const sectionName = (entry.target as HTMLElement).dataset.sectionName;
+            if (sectionName) {
+              setActiveSectionUI(sectionName);
+            }
+          }
+        });
+      }, observerOptions);
+
+      sections.forEach((section) => observer.observe(section));
+    }
+
     // Sidebar click handlers
     sidebarButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         const sectionId = (btn as HTMLElement).dataset.section;
         if (sectionId) {
-          setActiveSection(sectionId);
+          navigateToSection(sectionId);
         }
       });
     });
@@ -799,7 +844,7 @@ ${projects.map((project, index) => `  <span class="bracket">&#123;</span>
       tab.addEventListener('click', () => {
         const sectionId = (tab as HTMLElement).dataset.tab;
         if (sectionId) {
-          setActiveSection(sectionId);
+          navigateToSection(sectionId);
         }
       });
     });
