@@ -17,6 +17,81 @@ import LoadingScreen from '../components/LoadingScreen.astro';
   <!-- Search Overlay -->
   <SearchOverlay />
 
+  <!-- Project Detail Modal -->
+  <div id="project-detail-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden transition-all duration-300 opacity-0 pointer-events-none">
+    <div class="relative w-full max-w-3xl rounded-2xl border border-slate-700/60 bg-[#0d1117] text-slate-100 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/60">
+        <div class="flex items-center gap-3">
+          <span class="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+          </span>
+          <div>
+            <h3 id="modal-project-title" class="font-bold text-lg font-display text-slate-100 leading-tight">Project Title</h3>
+            <div id="modal-project-status" class="inline-flex mt-0.5"></div>
+          </div>
+        </div>
+        <button id="btn-close-project-modal" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Close (ESC)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="overflow-y-auto p-6 space-y-6 flex-1 custom-scrollbar">
+        <!-- Image Carousel / Gallery -->
+        <div class="relative rounded-xl overflow-hidden bg-slate-950 border border-slate-800/80 aspect-video flex items-center justify-center group shadow-inner">
+          <img id="modal-carousel-img" src="" alt="Project screenshot" class="w-full h-full object-contain transition-all duration-300" />
+          
+          <!-- Prev / Next buttons -->
+          <button id="modal-carousel-prev" class="absolute left-3 p-2 rounded-full bg-black/60 text-white hover:bg-black/90 hover:scale-110 transition-all hidden z-10 border border-white/10">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button id="modal-carousel-next" class="absolute right-3 p-2 rounded-full bg-black/60 text-white hover:bg-black/90 hover:scale-110 transition-all hidden z-10 border border-white/10">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+          
+          <!-- Image Counter Badge -->
+          <div id="modal-carousel-counter" class="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-black/75 text-slate-200 text-xs font-mono font-medium backdrop-blur-md hidden border border-white/10">
+            1 / 1
+          </div>
+        </div>
+
+        <!-- Thumbnails Container -->
+        <div id="modal-carousel-thumbnails" class="flex gap-2.5 overflow-x-auto pb-1 hidden custom-scrollbar"></div>
+
+        <!-- Description -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-mono uppercase tracking-wider text-slate-400 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+            About Project
+          </h4>
+          <p id="modal-project-desc" class="text-sm text-slate-300/90 leading-relaxed whitespace-pre-line bg-slate-900/40 p-4 rounded-xl border border-slate-800/60"></p>
+        </div>
+
+        <!-- Technologies -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-mono uppercase tracking-wider text-slate-400 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+            Technologies Used
+          </h4>
+          <div id="modal-project-tech" class="flex flex-wrap gap-2"></div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 border-t border-slate-800 bg-slate-900/60 flex items-center justify-end gap-3">
+        <a id="modal-project-github" href="#" target="_blank" rel="noopener" class="btn-ghost text-xs flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          Source Code
+        </a>
+        <a id="modal-project-demo" href="#" target="_blank" rel="noopener" class="btn-primary text-xs flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"></path></svg>
+          Live Demo
+        </a>
+      </div>
+    </div>
+  </div>
+
   <div id="vscode-window" class="fixed inset-0 flex flex-col isolate" style="background: var(--vscode-window);" data-view-mode="split">
     <!-- Workspace Bar -->
     <div class="flex items-center px-3 flex-shrink-0 relative justify-between sm:justify-start" style="height: 28px; background: var(--vscode-sidebar); border-bottom: 1px solid var(--vscode-border);">
@@ -163,6 +238,44 @@ import LoadingScreen from '../components/LoadingScreen.astro';
       return text.trim();
     }
 
+    function extractAllUrls(text: string): string[] {
+      if (!text) return [];
+      const urls: string[] = [];
+      
+      // 1. Match markdown images: ![alt](url)
+      const mdImgRegex = /!\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
+      let m;
+      while ((m = mdImgRegex.exec(text)) !== null) {
+        if (m[1] && !urls.includes(m[1])) urls.push(m[1]);
+      }
+
+      // 2. Match standard markdown links: [text](url)
+      const linkRegex = /\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
+      while ((m = linkRegex.exec(text)) !== null) {
+        if (m[1] && !urls.includes(m[1])) urls.push(m[1]);
+      }
+
+      // 3. Match HTML img src: src="url"
+      const srcRegex = /src="([^"]+)"/g;
+      while ((m = srcRegex.exec(text)) !== null) {
+        if (m[1] && !urls.includes(m[1])) urls.push(m[1]);
+      }
+
+      // 4. Raw HTTP/HTTPS URLs fallback
+      if (urls.length === 0) {
+        const rawRegex = /https?:\/\/[^\s"'<>)]+/g;
+        while ((m = rawRegex.exec(text)) !== null) {
+          if (m[0] && !urls.includes(m[0])) urls.push(m[0]);
+        }
+      }
+
+      return urls;
+    }
+
+    let allFetchedProjects: any[] = [];
+    let currentModalImages: string[] = [];
+    let currentImageIndex = 0;
+
     async function syncGitHubIssues() {
       logOutput('[GitHub Sync] Menghubungkan ke repositori GitHub rizkypratamayudha/rizkypratama...');
       try {
@@ -192,12 +305,15 @@ import LoadingScreen from '../components/LoadingScreen.astro';
           
           if (isProject) {
             const metadata = parseMarkdownBody(issue.body || '');
+            const rawImages = metadata.images || metadata.image || metadata.screenshots || metadata.images___screenshots || metadata['images / screenshots'] || issue.body || '';
+            const extractedImages = extractAllUrls(rawImages);
             projects.push({
               id: issue.number,
               title: issue.title.replace(/\[project\]/i, '').trim(),
               description: metadata.description || '',
-              tech: metadata.technologies ? metadata.technologies.split(',').map((t: string) => t.trim()) : [],
-              image: extractUrl(metadata.image || '') || '#',
+              tech: metadata.technologies ? metadata.technologies.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
+              images: extractedImages.length > 0 ? extractedImages : ['#'],
+              image: extractedImages.length > 0 ? extractedImages[0] : '#',
               github: extractUrl(metadata.github_link || '') || '#',
               demo: extractUrl(metadata.live_demo || '') || '#',
               status: metadata.status || 'completed'
@@ -432,26 +548,33 @@ ${list.map((skill, skillIndex) => `    <span class="bracket">&#123;</span> <span
 
         if (projects.length > 0) {
           updatedCount++;
+          allFetchedProjects = projects;
           const projectsGrid = document.getElementById('preview-projects-grid');
           if (projectsGrid) {
             projectsGrid.innerHTML = projects.map(project => `
-              <div class="preview-card gradient-border rounded-xl p-5 flex flex-col justify-between space-y-4">
-                <div class="h-32 rounded-lg overflow-hidden relative bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/30 flex items-center justify-center">
+              <div class="preview-card gradient-border rounded-xl p-5 flex flex-col justify-between space-y-4 cursor-pointer group hover:border-indigo-500/50 transition-all duration-200" data-project-id="${project.id}">
+                <div class="h-36 rounded-lg overflow-hidden relative bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/30 flex items-center justify-center">
                   <span class="text-3xl font-bold font-mono tracking-wider text-slate-700/40 select-none uppercase">
                     ${project.title.split(' ').map((w: string) => w[0]).join('').slice(0, 3)}
                   </span>
                   <img 
                     src="${project.image}" 
                     alt="${project.title}" 
-                    class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 rounded-lg" 
+                    class="absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-300 rounded-lg group-hover:scale-105" 
                     onload="this.classList.remove('opacity-0')" 
                     onerror="this.style.display='none'" 
                   />
+                  ${project.images && project.images.length > 1 ? `
+                    <span class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-black/75 text-white text-[10px] font-mono flex items-center gap-1 backdrop-blur-md border border-white/10 shadow-lg">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                      ${project.images.length} Photos
+                    </span>
+                  ` : ''}
                 </div>
 
                 <div class="space-y-2">
                   <div class="flex justify-between items-start">
-                    <h3 class="font-bold text-base text-slate-200 leading-snug font-display">${project.title}</h3>
+                    <h3 class="font-bold text-base text-slate-200 leading-snug font-display group-hover:text-indigo-400 transition-colors">${project.title}</h3>
                     <span class="text-[10px] font-mono px-2 py-0.5 rounded-full border flex-shrink-0 ${
                       project.status === 'completed' 
                         ? 'bg-teal-500/10 text-teal-400 border-teal-500/25' 
@@ -460,7 +583,7 @@ ${list.map((skill, skillIndex) => `    <span class="bracket">&#123;</span> <span
                       ${project.status === 'completed' ? '✓ Done' : '⚙ WIP'}
                     </span>
                   </div>
-                  <p class="text-xs text-slate-400/80 leading-relaxed">${project.description}</p>
+                  <p class="text-xs text-slate-400/80 leading-relaxed line-clamp-2">${project.description}</p>
                 </div>
 
                 <div class="space-y-3 pt-2">
@@ -472,23 +595,37 @@ ${list.map((skill, skillIndex) => `    <span class="bracket">&#123;</span> <span
                     `).join('')}
                   </div>
 
-                  <div class="flex items-center gap-3 pt-2 border-t border-white/5">
-                    ${project.github !== '#' ? `
-                      <a href="${project.github}" target="_blank" rel="noopener" class="text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                        Source
-                      </a>
-                    ` : ''}
-                    ${project.demo !== '#' ? `
-                      <a href="${project.demo}" target="_blank" rel="noopener" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition-colors">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"></path></svg>
-                        Live Demo
-                      </a>
-                    ` : ''}
+                  <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                    <div class="flex items-center gap-3">
+                      ${project.github !== '#' ? `
+                        <a href="${project.github}" target="_blank" rel="noopener" class="text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors project-external-link">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                          Source
+                        </a>
+                      ` : ''}
+                      ${project.demo !== '#' ? `
+                        <a href="${project.demo}" target="_blank" rel="noopener" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition-colors project-external-link">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"></path></svg>
+                          Live Demo
+                        </a>
+                      ` : ''}
+                    </div>
+                    <span class="text-[10px] font-mono text-indigo-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                      Details &rarr;
+                    </span>
                   </div>
                 </div>
               </div>
             `).join('');
+
+            projectsGrid.querySelectorAll('[data-project-id]').forEach(card => {
+              card.addEventListener('click', (e) => {
+                const target = e.target as HTMLElement;
+                if (target.closest('.project-external-link')) return;
+                const projId = (card as HTMLElement).dataset.projectId;
+                if (projId) openProjectModal(projId);
+              });
+            });
           }
 
           const codeProjectsJson = document.getElementById('code-projects-json');
@@ -516,6 +653,13 @@ ${projects.map((project, index) => `  <span class="bracket">&#123;</span>
                 <span class="truncate flex-1">project${project.id}.json</span>
               </button>
             `).join('');
+
+            sidebarProjects.querySelectorAll('[data-project]').forEach(btn => {
+              btn.addEventListener('click', () => {
+                const projId = (btn as HTMLElement).dataset.project;
+                if (projId) openProjectModal(projId);
+              });
+            });
           }
         }
 
@@ -619,6 +763,168 @@ ${projects.map((project, index) => `  <span class="bracket">&#123;</span>
           sidebarElement.classList.add('w-0');
           sidebarElement.classList.remove('lg:w-64');
         }
+      }
+    });
+
+    // ── Project Detail Modal Functions ─────────────────────────────────────────
+    function openProjectModal(projectId: number | string) {
+      const proj = allFetchedProjects.find(p => String(p.id) === String(projectId));
+      if (!proj) return;
+
+      const modal = document.getElementById('project-detail-modal');
+      const title = document.getElementById('modal-project-title');
+      const status = document.getElementById('modal-project-status');
+      const desc = document.getElementById('modal-project-desc');
+      const tech = document.getElementById('modal-project-tech');
+      const github = document.getElementById('modal-project-github') as HTMLAnchorElement;
+      const demo = document.getElementById('modal-project-demo') as HTMLAnchorElement;
+
+      if (title) title.textContent = proj.title;
+      if (status) {
+        status.innerHTML = `
+          <span class="text-[11px] font-mono px-2.5 py-0.5 rounded-full border ${
+            proj.status === 'completed' 
+              ? 'bg-teal-500/10 text-teal-400 border-teal-500/25' 
+              : 'bg-amber-500/10 text-amber-400 border-amber-500/25'
+          }">
+            ${proj.status === 'completed' ? '✓ Completed' : '⚙ In Progress'}
+          </span>
+        `;
+      }
+      if (desc) desc.textContent = proj.description || 'Tidak ada deskripsi rinci.';
+      if (tech) {
+        tech.innerHTML = proj.tech.map((t: string) => `
+          <span class="skill-tag tag-blue text-xs font-mono">${t}</span>
+        `).join('');
+      }
+
+      if (github) {
+        if (proj.github && proj.github !== '#') {
+          github.setAttribute('href', proj.github);
+          github.style.display = 'inline-flex';
+        } else {
+          github.style.display = 'none';
+        }
+      }
+
+      if (demo) {
+        if (proj.demo && proj.demo !== '#') {
+          demo.setAttribute('href', proj.demo);
+          demo.style.display = 'inline-flex';
+        } else {
+          demo.style.display = 'none';
+        }
+      }
+
+      // Setup Carousel
+      currentModalImages = proj.images && proj.images.length > 0 ? proj.images : [proj.image || '#'];
+      currentImageIndex = 0;
+      updateCarouselView();
+
+      if (modal) {
+        modal.classList.remove('hidden');
+        void modal.offsetHeight;
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100', 'pointer-events-auto');
+      }
+    }
+
+    function closeProjectModal() {
+      const modal = document.getElementById('project-detail-modal');
+      if (modal) {
+        modal.classList.remove('opacity-100', 'pointer-events-auto');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+        }, 300);
+      }
+    }
+
+    function updateCarouselView() {
+      const imgEl = document.getElementById('modal-carousel-img') as HTMLImageElement;
+      const prevBtn = document.getElementById('modal-carousel-prev');
+      const nextBtn = document.getElementById('modal-carousel-next');
+      const counter = document.getElementById('modal-carousel-counter');
+      const thumbsContainer = document.getElementById('modal-carousel-thumbnails');
+
+      const total = currentModalImages.length;
+      const validUrl = currentModalImages[currentImageIndex] !== '#' ? currentModalImages[currentImageIndex] : '';
+
+      if (imgEl) {
+        if (validUrl) {
+          imgEl.src = validUrl;
+          imgEl.style.display = 'block';
+        } else {
+          imgEl.style.display = 'none';
+        }
+      }
+
+      if (total > 1) {
+        if (prevBtn) prevBtn.classList.remove('hidden');
+        if (nextBtn) nextBtn.classList.remove('hidden');
+        if (counter) {
+          counter.classList.remove('hidden');
+          counter.textContent = `${currentImageIndex + 1} / ${total}`;
+        }
+        if (thumbsContainer) {
+          thumbsContainer.classList.remove('hidden');
+          thumbsContainer.innerHTML = currentModalImages.map((imgUrl, i) => `
+            <button class="w-16 h-12 rounded-lg overflow-hidden border-2 flex-shrink-0 transition-all ${
+              i === currentImageIndex ? 'border-indigo-500 scale-105 shadow-md shadow-indigo-500/30' : 'border-slate-800 opacity-60 hover:opacity-100'
+            }" data-thumb-index="${i}">
+              <img src="${imgUrl}" alt="Thumbnail ${i+1}" class="w-full h-full object-cover" />
+            </button>
+          `).join('');
+
+          thumbsContainer.querySelectorAll('[data-thumb-index]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              const idx = parseInt((e.currentTarget as HTMLElement).dataset.thumbIndex || '0', 10);
+              currentImageIndex = idx;
+              updateCarouselView();
+            });
+          });
+        }
+      } else {
+        if (prevBtn) prevBtn.classList.add('hidden');
+        if (nextBtn) nextBtn.classList.add('hidden');
+        if (counter) counter.classList.add('hidden');
+        if (thumbsContainer) thumbsContainer.classList.add('hidden');
+      }
+    }
+
+    // Modal Control Event Listeners
+    const btnCloseModal = document.getElementById('btn-close-project-modal');
+    const modalEl = document.getElementById('project-detail-modal');
+    const prevBtn = document.getElementById('modal-carousel-prev');
+    const nextBtn = document.getElementById('modal-carousel-next');
+
+    btnCloseModal?.addEventListener('click', closeProjectModal);
+
+    modalEl?.addEventListener('click', (e) => {
+      if (e.target === modalEl) {
+        closeProjectModal();
+      }
+    });
+
+    prevBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (currentModalImages.length > 0) {
+        currentImageIndex = (currentImageIndex - 1 + currentModalImages.length) % currentModalImages.length;
+        updateCarouselView();
+      }
+    });
+
+    nextBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (currentModalImages.length > 0) {
+        currentImageIndex = (currentImageIndex + 1) % currentModalImages.length;
+        updateCarouselView();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeProjectModal();
       }
     });
 

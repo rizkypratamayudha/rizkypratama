@@ -25,9 +25,10 @@ body:
   - type: textarea
     id: image
     attributes:
-      label: Image
-      description: "Tarik dan lepas (drag & drop) gambar proyek Anda ke kotak ini untuk mengunggahnya secara otomatis ke server GitHub."
-      placeholder: "Tarik gambar Anda ke sini..."
+      label: Images / Screenshots
+      description: "Tarik dan lepas (drag & drop) satu atau beberapa gambar/tangkapan layar proyek Anda ke kotak ini (atau paste URL gambar)."
+      placeholder: "Tarik satu atau beberapa gambar Anda ke sini..."
+
   - type: input
     id: github_link
     attributes:
