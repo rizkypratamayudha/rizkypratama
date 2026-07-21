@@ -213,11 +213,13 @@ import LoadingScreen from '../components/LoadingScreen.astro';
         const lines = sec.trim().split('\n');
         if (lines.length > 0) {
           const rawHeader = lines[0].trim().toLowerCase();
-          const header = rawHeader.replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_');
+          const singleUnderscoreHeader = rawHeader.replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_');
+          const multiUnderscoreHeader = rawHeader.replace(/[^a-z0-9_]/g, '_');
           const content = lines.slice(1).join('\n').trim();
-          if (header) {
-            data[header] = content;
+          if (rawHeader) {
             data[rawHeader] = content;
+            data[singleUnderscoreHeader] = content;
+            data[multiUnderscoreHeader] = content;
           }
         }
       });
@@ -334,14 +336,19 @@ import LoadingScreen from '../components/LoadingScreen.astro';
             });
           } else if (isExperience) {
             const metadata = parseMarkdownBody(issue.body || '');
-            const tech = metadata.technologies_used || metadata.technologies || metadata.tech || '';
+            const tech = metadata['technologies used (opsional)'] || metadata.technologies_used_opsional || metadata.technologies_used || metadata.technologies || metadata.tech || '';
+            const desc = metadata['description / responsibilities'] || metadata.description_responsibilities || metadata.description___responsibilities || metadata.description || '';
+            const role = metadata['role / title'] || metadata.role_title || metadata.role___title || metadata.role || issue.title.replace(/\[experience\]/i, '').trim();
+            const company = metadata['company name'] || metadata.company_name || metadata.company || '';
+            const locRaw = metadata['location (opsional)'] || metadata.location_opsional || metadata.location || '';
+            const loc = (locRaw === '_No response_' || locRaw === '_no response_') ? '' : locRaw;
             experiences.push({
-              role: metadata.role___title || metadata.role || issue.title.replace(/\[experience\]/i, '').trim(),
-              company: metadata.company_name || metadata.company || '',
+              role: role,
+              company: company,
               period: metadata.period || '',
-              location: metadata.location || '',
-              description: metadata.description___responsibilities || metadata.description || '',
-              technologies: tech ? tech.split(',').map((t: string) => t.trim()).filter(Boolean) : []
+              location: loc,
+              description: desc,
+              technologies: tech ? tech.split(',').map((t: string) => t.trim()).filter(t => t && t.toLowerCase() !== '_no response_') : []
             });
           } else if (isAbout) {
             const metadata = parseMarkdownBody(issue.body || '');
