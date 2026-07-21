@@ -26,3 +26,10 @@ body:
       placeholder: "Contoh: #FF2D20 (Laravel), #02569B (Flutter)"
     validations:
       required: true
+  - type: textarea
+    id: icon
+    attributes:
+      label: Icon / Image
+      description: "Tarik dan lepas (drag & drop) ikon/gambar keahlian Anda ke kotak ini untuk mengunggahnya secara otomatis ke server GitHub."
+      placeholder: "Tarik ikon atau gambar ke sini..."
+

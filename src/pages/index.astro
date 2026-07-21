@@ -203,7 +203,8 @@ import LoadingScreen from '../components/LoadingScreen.astro';
             if (skills[category]) {
               skills[category].push({
                 name: issue.title.replace(/\[skill\]/i, '').trim(),
-                color: metadata.color || '#007acc'
+                color: metadata.color || '#007acc',
+                icon: extractUrl(metadata.icon || metadata.image || '')
               });
             }
           } else if (isAbout) {
@@ -263,9 +264,13 @@ import LoadingScreen from '../components/LoadingScreen.astro';
           const aboutTitle = document.getElementById('preview-about-title');
           if (aboutTitle) aboutTitle.textContent = about.title;
           const aboutEmail = document.getElementById('preview-about-email');
-          if (aboutEmail) aboutEmail.textContent = `📧 ${about.email}`;
+          if (aboutEmail) {
+            aboutEmail.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> ${about.email}`;
+          }
           const aboutLocDet = document.getElementById('preview-about-location-detail');
-          if (aboutLocDet) aboutLocDet.textContent = `📍 ${about.location}`;
+          if (aboutLocDet) {
+            aboutLocDet.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> ${about.location}`;
+          }
 
           const codeAboutBio = document.getElementById('code-about-bio');
           if (codeAboutBio) codeAboutBio.textContent = about.bio;
@@ -289,13 +294,15 @@ import LoadingScreen from '../components/LoadingScreen.astro';
           if (about.education_timeline) {
             const timelineContainer = document.getElementById('preview-about-timeline');
             if (timelineContainer) {
-              timelineContainer.innerHTML = about.education_timeline.map((item: any) => `
-                <div class="relative">
-                  <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-[#007acc] border-4 border-slate-900 shadow"></div>
-                  <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">${item.period}</span>
-                  <h4 class="font-bold text-slate-200 mt-2 text-sm">${item.institution}</h4>
-                  <p class="text-xs text-slate-400 font-mono mt-0.5">${item.major}</p>
-                  <p class="text-xs text-slate-500 mt-1 leading-relaxed">${item.description}</p>
+              timelineContainer.innerHTML = about.education_timeline.map((item: any, i: number) => `
+                <div class="relative animate-fade-in-up stagger-${i + 1}">
+                  <div class="absolute -left-[31px] top-3 w-3 h-3 rounded-full bg-gradient-to-br from-indigo-500 to-blue-500 border-[3px] border-[#080b14] shadow-lg shadow-indigo-500/30"></div>
+                  <div class="preview-card ${i % 2 === 0 ? 'card-blue' : 'card-purple'} rounded-xl p-4 space-y-2">
+                    <span class="pill-badge pill-badge-purple text-[10px] px-2 py-0.5">${item.period}</span>
+                    <h5 class="font-bold text-slate-200 mt-1 text-sm font-display">${item.institution}</h5>
+                    <p class="text-xs text-indigo-400 font-mono">${item.major}</p>
+                    <p class="text-xs text-slate-400/80 leading-relaxed">${item.description}</p>
+                  </div>
                 </div>
               `).join('');
             }
@@ -322,12 +329,26 @@ import LoadingScreen from '../components/LoadingScreen.astro';
           const idxSkeleton = document.getElementById('preview-index-skeleton');
           const idxContent = document.getElementById('preview-index-content');
           if (idxSkeleton) idxSkeleton.remove();
-          if (idxContent) idxContent.classList.remove('hidden');
+          if (idxContent) {
+            idxContent.classList.remove('hidden');
+            idxContent.querySelectorAll<HTMLElement>('.animate-fade-in-up').forEach(el => {
+              el.style.animation = 'none';
+              void el.offsetHeight;
+              el.style.animation = '';
+            });
+          }
 
           const abtSkeleton = document.getElementById('preview-about-skeleton');
           const abtContent = document.getElementById('preview-about-content');
           if (abtSkeleton) abtSkeleton.remove();
-          if (abtContent) abtContent.classList.remove('hidden');
+          if (abtContent) {
+            abtContent.classList.remove('hidden');
+            abtContent.querySelectorAll<HTMLElement>('.animate-fade-in-up').forEach(el => {
+              el.style.animation = 'none';
+              void el.offsetHeight;
+              el.style.animation = '';
+            });
+          }
         }
 
         const totalSkills = Object.values(skills).flat().length;
@@ -335,25 +356,26 @@ import LoadingScreen from '../components/LoadingScreen.astro';
           updatedCount++;
           const skillsGrid = document.getElementById('preview-skills-grid');
           if (skillsGrid) {
-            skillsGrid.innerHTML = Object.entries(skills).map(([category, list]) => {
+            const cardColors = ['card-blue', 'card-teal', 'card-purple', 'card-pink'];
+            const tagColors = ['tag-blue', 'tag-teal', 'tag-purple', 'tag-pink', 'tag-orange'];
+            skillsGrid.innerHTML = Object.entries(skills).map(([category, list], catIdx) => {
               if (list.length === 0) return '';
+              const cardColor = cardColors[catIdx % cardColors.length];
               return `
-                <div class="preview-card p-6 rounded-xl space-y-4">
-                  <h3 class="font-semibold text-sm uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full" style="background: ${list[0]?.color || '#007acc'};"></span>
+                <div class="preview-card ${cardColor} rounded-xl p-5 space-y-4">
+                  <h3 class="font-semibold text-sm uppercase tracking-wider text-slate-400 flex items-center gap-2 font-display">
+                    <span class="w-2 h-2 rounded-full" style="background: ${list[0]?.color || '#6366f1'};"></span>
                     ${category}
                   </h3>
-                  <div class="flex flex-wrap gap-2.5 pt-1">
-                    ${list.map(skill => `
-                      <div 
-                        class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono border transition-all duration-305 hover:scale-[1.03]"
-                        style="background: ${skill.color}12; border-color: ${skill.color}25; color: var(--vscode-text);"
-                        onmouseover="this.style.background='${skill.color}22'; this.style.borderColor='${skill.color}60'; this.style.boxShadow='0 4px 12px -2px ${skill.color}30'"
-                        onmouseout="this.style.background='${skill.color}12'; this.style.borderColor='${skill.color}25'; this.style.boxShadow='none'"
-                      >
-                        <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background: ${skill.color}; box-shadow: 0 0 8px ${skill.color};"></span>
+                  <div class="flex flex-wrap gap-2 pt-1">
+                    ${list.map((skill, sIdx) => `
+                      <span class="skill-tag ${tagColors[sIdx % tagColors.length]} inline-flex items-center gap-1.5">
+                        ${skill.icon 
+                          ? `<img src="${skill.icon}" alt="${skill.name}" class="w-4 h-4 object-contain flex-shrink-0" onerror="this.style.display='none'" />` 
+                          : `<span class="w-2 h-2 rounded-full flex-shrink-0" style="background: ${skill.color};"></span>`
+                        }
                         <span>${skill.name}</span>
-                      </div>
+                      </span>
                     `).join('')}
                   </div>
                 </div>
@@ -370,7 +392,7 @@ import LoadingScreen from '../components/LoadingScreen.astro';
 <span class="bracket">&#123;</span>
 ${Object.entries(skills).map(([category, list], index) => {
   return `  <span class="key">"${category}"</span>: <span class="bracket">[</span>
-${list.map((skill, skillIndex) => `    <span class="bracket">&#123;</span> <span class="key">"name"</span>: <span class="string">"${skill.name}"</span>, <span class="key">"color"</span>: <span class="string">"${skill.color}"</span> <span class="bracket">&#125;</span>${skillIndex < list.length - 1 ? ',' : ''}`).join('\n')}
+${list.map((skill, skillIndex) => `    <span class="bracket">&#123;</span> <span class="key">"name"</span>: <span class="string">"${skill.name}"</span>, <span class="key">"color"</span>: <span class="string">"${skill.color}"</span>${skill.icon ? `, <span class="key">"icon"</span>: <span class="string">"${skill.icon}"</span>` : ''} <span class="bracket">&#125;</span>${skillIndex < list.length - 1 ? ',' : ''}`).join('\n')}
   <span class="bracket">]</span>${index < Object.keys(skills).length - 1 ? ',' : ''}`;
 }).join('\n')}
 <span class="bracket">&#125;</span>
@@ -406,9 +428,9 @@ ${list.map((skill, skillIndex) => `    <span class="bracket">&#123;</span> <span
           const projectsGrid = document.getElementById('preview-projects-grid');
           if (projectsGrid) {
             projectsGrid.innerHTML = projects.map(project => `
-              <div class="preview-card gradient-border p-5 rounded-xl flex flex-col justify-between space-y-4">
-                <div class="h-32 rounded-lg overflow-hidden relative bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 flex items-center justify-center group">
-                  <span class="text-3xl font-bold font-mono tracking-wider text-slate-700/60 select-none uppercase">
+              <div class="preview-card gradient-border rounded-xl p-5 flex flex-col justify-between space-y-4">
+                <div class="h-32 rounded-lg overflow-hidden relative bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/30 flex items-center justify-center">
+                  <span class="text-3xl font-bold font-mono tracking-wider text-slate-700/40 select-none uppercase">
                     ${project.title.split(' ').map((w: string) => w[0]).join('').slice(0, 3)}
                   </span>
                   <img 
@@ -422,37 +444,37 @@ ${list.map((skill, skillIndex) => `    <span class="bracket">&#123;</span> <span
 
                 <div class="space-y-2">
                   <div class="flex justify-between items-start">
-                    <h3 class="font-bold text-base text-slate-200 leading-snug">${project.title}</h3>
-                    <span class="text-[9px] font-mono px-2 py-0.5 rounded-full border flex-shrink-0 ${
+                    <h3 class="font-bold text-base text-slate-200 leading-snug font-display">${project.title}</h3>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded-full border flex-shrink-0 ${
                       project.status === 'completed' 
-                        ? 'bg-green-500/10 text-green-400 border-green-500/25' 
-                        : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/25'
+                        ? 'bg-teal-500/10 text-teal-400 border-teal-500/25' 
+                        : 'bg-amber-500/10 text-amber-400 border-amber-500/25'
                     }">
-                      ${project.status === 'completed' ? '✓ Completed' : '⚙ In Progress'}
+                      ${project.status === 'completed' ? '✓ Done' : '⚙ WIP'}
                     </span>
                   </div>
-                  <p class="text-xs text-slate-400 leading-relaxed">${project.description}</p>
+                  <p class="text-xs text-slate-400/80 leading-relaxed">${project.description}</p>
                 </div>
 
-                <div class="space-y-3.5 pt-2">
+                <div class="space-y-3 pt-2">
                   <div class="flex flex-wrap gap-1.5">
                     ${project.tech.map((tech: string) => `
-                      <span class="text-[9px] font-mono px-2 py-0.5 rounded bg-slate-800/80 text-[#007acc] dark:text-[#38bdf8] border border-slate-700/60">
+                      <span class="skill-tag tag-blue text-[10px]">
                         ${tech}
                       </span>
                     `).join('')}
                   </div>
 
-                  <div class="flex items-center gap-3 pt-1 border-t border-slate-800/60">
+                  <div class="flex items-center gap-3 pt-2 border-t border-white/5">
                     ${project.github !== '#' ? `
-                      <a href="${project.github}" target="_blank" rel="noopener" class="text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1 transition-colors">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                        GitHub
+                      <a href="${project.github}" target="_blank" rel="noopener" class="text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                        Source
                       </a>
                     ` : ''}
                     ${project.demo !== '#' ? `
-                      <a href="${project.demo}" target="_blank" rel="noopener" class="text-xs font-semibold text-[#007acc] dark:text-[#38bdf8] hover:underline flex items-center gap-1 transition-colors">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"></path></svg>
+                      <a href="${project.demo}" target="_blank" rel="noopener" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition-colors">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"></path></svg>
                         Live Demo
                       </a>
                     ` : ''}
