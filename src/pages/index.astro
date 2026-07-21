@@ -137,10 +137,12 @@ import LoadingScreen from '../components/LoadingScreen.astro';
       sections.forEach(sec => {
         const lines = sec.trim().split('\n');
         if (lines.length > 0) {
-          const header = lines[0].trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+          const rawHeader = lines[0].trim().toLowerCase();
+          const header = rawHeader.replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_');
           const content = lines.slice(1).join('\n').trim();
           if (header) {
             data[header] = content;
+            data[rawHeader] = content;
           }
         }
       });
@@ -149,12 +151,15 @@ import LoadingScreen from '../components/LoadingScreen.astro';
 
     function extractUrl(text: string) {
       if (!text) return '';
-      // Cocokkan link markdown: ![alt](url)
+      // Markdown image: ![alt](url) or [alt](url)
       let match = text.match(/\((https?:\/\/[^\s)]+)\)/);
       if (match) return match[1];
-      // Cocokkan tag HTML img src: src="url"
+      // HTML img src: src="url"
       match = text.match(/src="([^"]+)"/);
       if (match) return match[1];
+      // Raw HTTP/HTTPS URL
+      match = text.match(/https?:\/\/[^\s"'<>)]+/);
+      if (match) return match[0];
       return text.trim();
     }
 
@@ -199,14 +204,16 @@ import LoadingScreen from '../components/LoadingScreen.astro';
             });
           } else if (isSkill) {
             const metadata = parseMarkdownBody(issue.body || '');
-            const category = (metadata.category || 'backend').toLowerCase();
-            if (skills[category]) {
-              skills[category].push({
-                name: issue.title.replace(/\[skill\]/i, '').trim(),
-                color: metadata.color || '#007acc',
-                icon: extractUrl(metadata.icon || metadata.image || '')
-              });
+            const category = (metadata.category || 'backend').toLowerCase().replace(/[`\r\n]/g, '').trim();
+            const iconRaw = metadata.icon || metadata.image || metadata.icon_image || metadata.icon___image || metadata['icon / image'] || '';
+            if (!skills[category]) {
+              skills[category] = [];
             }
+            skills[category].push({
+              name: issue.title.replace(/\[skill\]/i, '').trim(),
+              color: (metadata.color || '#007acc').trim(),
+              icon: extractUrl(iconRaw)
+            });
           } else if (isAbout) {
             const metadata = parseMarkdownBody(issue.body || '');
             let timeline = [];
