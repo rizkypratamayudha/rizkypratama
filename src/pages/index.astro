@@ -286,6 +286,7 @@ import LoadingScreen from '../components/LoadingScreen.astro';
         logOutput(`[GitHub Sync] Berhasil terhubung. Menemukan ${issues.length} data terpublikasi (closed issues). Memproses...`);
         
         const projects: any[] = [];
+        const experiences: any[] = [];
         const skills: Record<string, any[]> = {
           backend: [],
           frontend: [],
@@ -302,6 +303,7 @@ import LoadingScreen from '../components/LoadingScreen.astro';
           const isProject = labels.includes('project') || titleLower.includes('[project]') || titleLower.startsWith('project:');
           const isSkill = labels.includes('skill') || titleLower.includes('[skill]') || titleLower.startsWith('skill:');
           const isAbout = labels.includes('about') || titleLower.includes('[about]') || titleLower.startsWith('about:');
+          const isExperience = labels.includes('experience') || titleLower.includes('[experience]') || titleLower.startsWith('experience:');
           
           if (isProject) {
             const metadata = parseMarkdownBody(issue.body || '');
@@ -330,12 +332,29 @@ import LoadingScreen from '../components/LoadingScreen.astro';
               color: (metadata.color || '#007acc').trim(),
               icon: extractUrl(iconRaw)
             });
+          } else if (isExperience) {
+            const metadata = parseMarkdownBody(issue.body || '');
+            const tech = metadata.technologies_used || metadata.technologies || metadata.tech || '';
+            experiences.push({
+              role: metadata.role___title || metadata.role || issue.title.replace(/\[experience\]/i, '').trim(),
+              company: metadata.company_name || metadata.company || '',
+              period: metadata.period || '',
+              location: metadata.location || '',
+              description: metadata.description___responsibilities || metadata.description || '',
+              technologies: tech ? tech.split(',').map((t: string) => t.trim()).filter(Boolean) : []
+            });
           } else if (isAbout) {
             const metadata = parseMarkdownBody(issue.body || '');
             let timeline = [];
             if (metadata.education_timeline) {
               try {
                 timeline = JSON.parse(metadata.education_timeline);
+              } catch(e) {}
+            }
+            let workExpFromAbout = [];
+            if (metadata.work_experience) {
+              try {
+                workExpFromAbout = JSON.parse(metadata.work_experience);
               } catch(e) {}
             }
             about = {
@@ -349,7 +368,8 @@ import LoadingScreen from '../components/LoadingScreen.astro';
               github: metadata.github || '',
               avatar: extractUrl(metadata.avatar || ''),
               cv: extractUrl(metadata.cv || ''),
-              education_timeline: timeline.length > 0 ? timeline : null
+              education_timeline: timeline.length > 0 ? timeline : null,
+              work_experience: workExpFromAbout.length > 0 ? workExpFromAbout : null
             };
           }
         });
@@ -412,6 +432,34 @@ import LoadingScreen from '../components/LoadingScreen.astro';
           const bioContainer = document.getElementById('preview-about-bio-container');
           if (bioContainer && about.bio) {
             bioContainer.innerHTML = about.bio.split('\n\n').map((p: string) => `<p>${p}</p>`).join('');
+          }
+
+          const combinedExperiences = [...experiences, ...(about?.work_experience || [])];
+          if (combinedExperiences.length > 0) {
+            const expContainer = document.getElementById('preview-about-experience');
+            if (expContainer) {
+              expContainer.innerHTML = combinedExperiences.map((item: any, i: number) => `
+                <div class="relative animate-fade-in-up stagger-${i + 1}">
+                  <div class="absolute -left-[31px] top-3 w-3 h-3 rounded-full bg-gradient-to-br from-teal-400 to-indigo-500 border-[3px] border-[#080b14] shadow-lg shadow-teal-500/30"></div>
+                  <div class="preview-card ${i % 2 === 0 ? 'card-teal' : 'card-blue'} rounded-xl p-4 space-y-2">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <span class="pill-badge pill-badge-teal text-[10px] px-2 py-0.5">${item.period || ''}</span>
+                      ${item.location ? `<span class="text-[10px] font-mono text-slate-500">${item.location}</span>` : ''}
+                    </div>
+                    <h5 class="font-bold text-slate-200 mt-1 text-sm font-display">${item.role || ''}</h5>
+                    <p class="text-xs text-teal-400 font-mono font-semibold">${item.company || ''}</p>
+                    <p class="text-xs text-slate-400/80 leading-relaxed whitespace-pre-line">${item.description || ''}</p>
+                    ${item.technologies && item.technologies.length > 0 ? `
+                      <div class="flex flex-wrap gap-1.5 pt-1">
+                        ${item.technologies.map((t: string) => `
+                          <span class="skill-tag tag-teal text-[10px]">${t}</span>
+                        `).join('')}
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              `).join('');
+            }
           }
 
           if (about.education_timeline) {

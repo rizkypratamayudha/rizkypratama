@@ -1,0 +1,52 @@
+name: Add Work Experience
+description: Add a work experience entry to your portfolio timeline
+title: "[Experience] "
+labels: ["experience"]
+body:
+  - type: markdown
+    attributes:
+      value: "Form ini digunakan untuk menambahkan pengalaman kerja baru ke dalam linimasa portofolio Anda."
+  - type: input
+    id: role
+    attributes:
+      label: Role / Title
+      description: "Posisi atau peranan pekerjaan Anda."
+      placeholder: "Contoh: Software Engineer / Fullstack Developer"
+    validations:
+      required: true
+  - type: input
+    id: company
+    attributes:
+      label: Company Name
+      description: "Nama perusahaan atau organisasi tempat bekerja."
+      placeholder: "Contoh: PT Tech Innovator Indonesia / Freelance"
+    validations:
+      required: true
+  - type: input
+    id: period
+    attributes:
+      label: Period
+      description: "Masa kerja."
+      placeholder: "Contoh: Jan 2023 - Present / 2022 - 2023"
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Location (Opsional)
+      description: "Lokasi kerja atau tipe kerja."
+      placeholder: "Contoh: Jakarta, Indonesia (Remote) / Surabaya, East Java"
+  - type: textarea
+    id: description
+    attributes:
+      label: Description / Responsibilities
+      description: "Deskripsi tanggung jawab, pencapaian, atau proyek yang dikerjakan."
+      placeholder: "Ceritakan tentang tanggung jawab dan hasil kerja Anda..."
+    validations:
+      required: true
+  - type: input
+    id: technologies
+    attributes:
+      label: Technologies Used (Opsional)
+      description: "Teknologi yang digunakan (pisahkan dengan koma)."
+      placeholder: "Contoh: React, Node.js, PostgreSQL, Docker"

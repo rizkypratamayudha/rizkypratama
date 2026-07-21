@@ -75,3 +75,20 @@ body:
             "description": "Fokus belajar pemrograman..."
           }
         ]
+  - type: textarea
+    id: work_experience
+    attributes:
+      label: Work Experience Timeline
+      description: "Masukkan timeline riwayat pengalaman kerja dalam format JSON array."
+      placeholder: |
+        [
+          {
+            "period": "2023 - Present",
+            "role": "Frontend Developer",
+            "company": "PT Tech Innovator",
+            "location": "Jakarta, Indonesia",
+            "description": "Mengembangkan fitur UI web berbasis React dan Tailwind...",
+            "technologies": ["React", "TypeScript", "Tailwind CSS"]
+          }
+        ]
+
