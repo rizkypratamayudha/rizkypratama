@@ -83,9 +83,14 @@
       updateThemeIcon();
     });
 
-    // Search button
+    // Search & Settings buttons
     const searchBtn = document.getElementById('btn-search');
     searchBtn?.addEventListener('click', () => {
+      (window as any).openSearch?.();
+    });
+
+    const settingsBtn = document.getElementById('btn-settings');
+    settingsBtn?.addEventListener('click', () => {
       (window as any).openSearch?.();
     });
   });

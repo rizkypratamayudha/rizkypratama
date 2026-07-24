@@ -372,6 +372,7 @@ import LoadingScreen from '../components/LoadingScreen.astro';
               location: metadata.location || '',
               education: metadata.education || '',
               email: metadata.email || '',
+              whatsapp: metadata.whatsapp || '6282234052425',
               github: metadata.github || '',
               avatar: extractUrl(metadata.avatar || ''),
               cv: extractUrl(metadata.cv || ''),
@@ -487,6 +488,11 @@ import LoadingScreen from '../components/LoadingScreen.astro';
           }
 
           // Update Contact section links
+          const contactWa = document.getElementById('preview-contact-whatsapp') as HTMLAnchorElement;
+          if (contactWa && (about.whatsapp || '6282234052425')) {
+            const cleanPhone = (about.whatsapp || '6282234052425').replace(/[^0-9]/g, '');
+            contactWa.setAttribute('href', `https://wa.me/${cleanPhone}`);
+          }
           const contactEmail = document.getElementById('preview-contact-email') as HTMLAnchorElement;
           if (contactEmail && about.email) contactEmail.setAttribute('href', `mailto:${about.email}`);
           const contactGithub = document.getElementById('preview-contact-github') as HTMLAnchorElement;
@@ -499,6 +505,8 @@ import LoadingScreen from '../components/LoadingScreen.astro';
           if (codeContactTitle) codeContactTitle.textContent = about.title;
           const codeContactEmail = document.getElementById('code-contact-email');
           if (codeContactEmail) codeContactEmail.textContent = about.email;
+          const codeContactWa = document.getElementById('code-contact-whatsapp');
+          if (codeContactWa) codeContactWa.textContent = about.whatsapp || '6282234052425';
           const codeContactGithub = document.getElementById('code-contact-github');
           if (codeContactGithub) codeContactGithub.textContent = about.github;
           const codeContactLoc = document.getElementById('code-contact-location');

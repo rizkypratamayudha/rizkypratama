@@ -29,6 +29,7 @@ import aboutData from '../data/about.json';
         <p class="mb-2" style="color: var(--vscode-text-muted);">// {aboutData.name}</p>
         <p><span class="text-[#9CDCFE]">"name"</span><span style="color: var(--vscode-text-muted);">: </span><span class="text-[#CE9178]">"{aboutData.name}"</span></p>
         <p><span class="text-[#9CDCFE]">"email"</span><span style="color: var(--vscode-text-muted);">: </span><a href={`mailto:${aboutData.email}`} class="text-[#CE9178] hover:text-[#007acc] transition-colors">"{aboutData.email}"</a></p>
+        <p><span class="text-[#9CDCFE]">"whatsapp"</span><span style="color: var(--vscode-text-muted);">: </span><a href={`https://wa.me/${(aboutData.whatsapp || '6282234052425').replace(/[^0-9]/g, '')}`} target="_blank" class="text-[#CE9178] hover:text-[#007acc] transition-colors">"{aboutData.whatsapp || '082234052425'}"</a></p>
         <p><span class="text-[#9CDCFE]">"github"</span><span style="color: var(--vscode-text-muted);">: </span><a href={aboutData.github} target="_blank" class="text-[#CE9178] hover:text-[#007acc] transition-colors">"{aboutData.github}"</a></p>
         <p><span class="text-[#9CDCFE]">"location"</span><span style="color: var(--vscode-text-muted);">: </span><span class="text-[#CE9178]">"{aboutData.location}"</span></p>
       </div>
@@ -51,6 +52,7 @@ import aboutData from '../data/about.json';
         <a href="#contact" class="text-[11px] hover:text-white dark:hover:text-white transition-colors leading-relaxed" style="color: var(--vscode-text-muted);">Contact</a>
         <a href={aboutData.github} target="_blank" class="text-[11px] hover:text-white dark:hover:text-white transition-colors leading-relaxed" style="color: var(--vscode-text-muted);">GitHub</a>
         <a href={`mailto:${aboutData.email}`} class="text-[11px] hover:text-white dark:hover:text-white transition-colors leading-relaxed" style="color: var(--vscode-text-muted);">Email</a>
+        <a href={`https://wa.me/${(aboutData.whatsapp || '6282234052425').replace(/[^0-9]/g, '')}`} target="_blank" class="text-[11px] hover:text-white dark:hover:text-white transition-colors leading-relaxed" style="color: var(--vscode-text-muted);">WhatsApp</a>
       </div>
     </div>
   </div>
